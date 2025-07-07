@@ -56,6 +56,9 @@ export OPENROUTER_API_KEY="your-openrouter-api-key"
 # Optional: For OpenRouter rankings
 export OPENROUTER_SITE_URL="https://your-site.com"
 export OPENROUTER_SITE_NAME="Your App Name"
+
+# Optional: If you want to use a specific openai compatible api provider, you can set the base url here
+export OPENAI_BASE_URL="your-openai-compatible-api-base-url"
 ```
 
 ### Basic Usage
