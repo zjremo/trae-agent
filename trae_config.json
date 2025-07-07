@@ -30,6 +30,16 @@
       "top_p": 1,
       "top_k": 0,
       "max_retries": 10
+    },
+    "ollama": {
+      "api_key": "ollama",
+      "base_url": "http://localhost:11434",
+      "model": "model_name",
+      "max_tokens": 4096,
+      "temperature": 0.5,
+      "top_p": 1,
+      "top_k": 0,
+      "max_retries": 10 
     }
   },
   "lakeview_config": {
