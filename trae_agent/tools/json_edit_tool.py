@@ -77,7 +77,7 @@ JSONPath syntax supported:
             ),
             ToolParameter(
                 name="value",
-                type=["string", "number", "boolean", "object", "array", "null"],
+                type="object",
                 description="The value to set or add. Must be JSON-serializable. Required for set and add operations.",
                 required=False,
             ),
