@@ -47,14 +47,7 @@ class TraeAgent(Agent):
         recorder = TrajectoryRecorder(trajectory_path)
         self.set_trajectory_recorder(recorder)
 
-        # Start recording with task info
-        if hasattr(self, "task") and self.task:
-            recorder.start_recording(
-                task=self.task,
-                provider=self.llm_client.provider.value,
-                model=self.model_parameters.model,
-                max_steps=self.max_steps,
-            )
+        
 
         return recorder.get_trajectory_path()
 
