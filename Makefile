@@ -24,7 +24,7 @@ install-dev:
 
 # Testing commands
 test:
-	SKIP_OLLAMA_TEST=true SKIP_OPENROUTER_TEST=true SKIP_GOOGLE_TEST=true uv run pytest
+	SKIP_OLLAMA_TEST=true SKIP_OPENROUTER_TEST=true SKIP_GOOGLE_TEST=true pytest
 
 # Pre-commit commands
 pre-commit: pre-commit-install pre-commit-run

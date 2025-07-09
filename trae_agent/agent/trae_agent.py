@@ -248,4 +248,4 @@ If you are sure the issue has been solved, you should call the `task_done` to fi
     @override
     def task_incomplete_message(self) -> str:
         """Return a message indicating that the task is incomplete."""
-        return ("ERROR! Your Patch is empty. Please provide a patch that fixes the problem.")
+        return "ERROR! Your Patch is empty. Please provide a patch that fixes the problem."
