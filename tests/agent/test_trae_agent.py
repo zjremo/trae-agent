@@ -45,7 +45,7 @@ class TestTraeAgentExtended(unittest.TestCase):
 
     @patch("trae_agent.utils.trajectory_recorder.TrajectoryRecorder")
     def test_trajectory_setup(self, mock_recorder):
-        self.agent.task = "test task"
+        self.agent._task = "test task"
         _ = self.agent.setup_trajectory_recording()
         self.assertIsNotNone(self.agent._trajectory_recorder)
 
@@ -64,8 +64,8 @@ class TestTraeAgentExtended(unittest.TestCase):
 
         self.assertEqual(self.agent.project_path, self.test_project_path)
         self.assertEqual(self.agent.must_patch, "true")
-        self.assertEqual(len(self.agent.tools), 5)
-        self.assertTrue(any(tool.get_name() == "bash" for tool in self.agent.tools))
+        self.assertEqual(len(self.agent._tools), 5)
+        self.assertTrue(any(tool.get_name() == "bash" for tool in self.agent._tools))
 
     @patch("subprocess.check_output")
     @patch("os.chdir")
@@ -92,7 +92,7 @@ class TestTraeAgentExtended(unittest.TestCase):
     @patch("asyncio.create_task")
     @patch("trae_agent.utils.cli_console.CLIConsole")
     def test_task_execution_flow(self, mock_console, mock_task):
-        self.agent.cli_console = mock_console
+        self.agent.set_cli_console(mock_console)
         asyncio.run(self.agent.execute_task())
         mock_console.start.assert_called_once()
 
@@ -115,13 +115,52 @@ class TestTraeAgentExtended(unittest.TestCase):
             "task_done",
         ]
         self.agent.new_task("test", {"project_path": self.test_project_path}, tools)
-        tool_names = [tool.get_name() for tool in self.agent.tools]
+        tool_names = [tool.get_name() for tool in self.agent._tools]
 
-        self.assertEqual(len(self.agent.tools), len(tools))
+        self.assertEqual(len(self.agent._tools), len(tools))
         self.assertIn("bash", tool_names)
         self.assertIn("str_replace_based_edit_tool", tool_names)
         self.assertIn("sequentialthinking", tool_names)
         self.assertIn("task_done", tool_names)
+
+    def test_protected_attributes_access_restrictions(self):
+        """Test that protected attributes cannot be accessed directly from outside the class."""
+
+        # Test that accessing protected attributes raises AttributeError
+        with self.assertRaises(AttributeError):
+            self.agent.llm_client = 5
+
+        with self.assertRaises(AttributeError):
+            _ = self.agent.max_steps
+
+        with self.assertRaises(AttributeError):
+            _ = self.agent.model_parameters
+
+        with self.assertRaises(AttributeError):
+            _ = self.agent.initial_messages
+
+        with self.assertRaises(AttributeError):
+            _ = self.agent.task
+
+        with self.assertRaises(AttributeError):
+            _ = self.agent.tools
+
+        with self.assertRaises(AttributeError):
+            _ = self.agent.tool_caller
+
+    def test_public_property_access_allowed(self):
+        """Test that public properties can be accessed properly."""
+
+        # Test that public properties work correctly
+        self.assertIsNotNone(self.agent.llm_client)
+        self.assertIsNone(self.agent.cli_console)
+
+        # Test that public property setters work
+        from trae_agent.utils.cli_console import CLIConsole
+
+        mock_console = MagicMock(spec=CLIConsole)
+        self.agent.set_cli_console(mock_console)
+        self.assertEqual(self.agent.cli_console, mock_console)
 
 
 if __name__ == "__main__":

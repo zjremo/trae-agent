@@ -58,21 +58,21 @@ class TraeAgent(Agent):
         tool_names: list[str] | None = None,
     ):
         """Create a new task."""
-        self.task: str = task
+        self._task: str = task
 
         if tool_names is None:
             tool_names = TraeAgentToolNames
 
         # Get the model provider from the LLM client
         provider = self._llm_client.provider.value
-        self.tools: list[Tool] = [
+        self._tools: list[Tool] = [
             tools_registry[tool_name](model_provider=provider)
             for tool_name in tool_names
         ]
-        self.tool_caller: ToolExecutor = ToolExecutor(self.tools)
+        self._tool_caller: ToolExecutor = ToolExecutor(self._tools)
 
-        self.initial_messages: list[LLMMessage] = []
-        self.initial_messages.append(
+        self._initial_messages: list[LLMMessage] = []
+        self._initial_messages.append(
             LLMMessage(role="system", content=self.get_system_prompt())
         )
 
@@ -92,7 +92,7 @@ class TraeAgent(Agent):
             if attr in extra_args:
                 setattr(self, attr, extra_args[attr])
 
-        self.initial_messages.append(LLMMessage(role="user", content=user_message))
+        self._initial_messages.append(LLMMessage(role="user", content=user_message))
 
         # If trajectory recorder is set, start recording
         if self._trajectory_recorder:

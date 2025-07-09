@@ -296,7 +296,7 @@ def interactive(
                     Panel(
                         f"""[bold]Provider:[/bold] {agent.llm_client.provider.value}
     [bold]Model:[/bold] {config.model_providers[config.default_provider].model}
-    [bold]Available Tools:[/bold] {len(agent.tools)}
+    [bold]Available Tools:[/bold] {len(agent._tools)}
     [bold]Config File:[/bold] {config_file}
     [bold]Working Directory:[/bold] {os.getcwd()}""",
                         title="Agent Status",
