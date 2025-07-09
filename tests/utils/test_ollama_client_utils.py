@@ -1,3 +1,6 @@
+# Copyright (c) 2025 ByteDance Ltd. and/or its affiliates
+# SPDX-License-Identifier: MIT
+
 """
 This test file is used to test the Ollama client. This test program is expected to verify basic functionalities and check if the results match the expected output.
 

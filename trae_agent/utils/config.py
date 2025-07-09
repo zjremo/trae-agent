@@ -80,6 +80,7 @@ class Config:
                 "anthropic": ModelParameters(
                     model="claude-sonnet-4-20250514",
                     api_key="",
+                    base_url="https://api.anthropic.com",
                     max_tokens=4096,
                     temperature=0.5,
                     top_p=1,
@@ -98,6 +99,9 @@ class Config:
                 self.model_providers[provider] = ModelParameters(
                     model=str(provider_config.get("model", "")),
                     api_key=str(provider_config.get("api_key", "")),
+                    base_url=str(provider_config.get("base_url"))
+                    if "base_url" in provider_config
+                    else None,
                     max_tokens=int(provider_config.get("max_tokens", 1000)),
                     temperature=float(provider_config.get("temperature", 0.5)),
                     top_p=float(provider_config.get("top_p", 1)),
@@ -106,9 +110,6 @@ class Config:
                     parallel_tool_calls=bool(
                         provider_config.get("parallel_tool_calls", False)
                     ),
-                    base_url=str(provider_config.get("base_url"))
-                    if "base_url" in provider_config
-                    else None,
                     api_version=str(provider_config.get("api_version"))
                     if "api_version" in provider_config
                     else None,
