@@ -72,9 +72,7 @@ class TraeAgent(Agent):
         self._tool_caller: ToolExecutor = ToolExecutor(self._tools)
 
         self._initial_messages: list[LLMMessage] = []
-        self._initial_messages.append(
-            LLMMessage(role="system", content=self.get_system_prompt())
-        )
+        self._initial_messages.append(LLMMessage(role="system", content=self.get_system_prompt()))
 
         user_message = ""
         if not extra_args:
@@ -234,9 +232,7 @@ If you are sure the issue has been solved, you should call the `task_done` to fi
         """Check if the LLM indicates that the task is completed."""
         if llm_response.tool_calls is None:
             return False
-        return any(
-            tool_call.name == "task_done" for tool_call in llm_response.tool_calls
-        )
+        return any(tool_call.name == "task_done" for tool_call in llm_response.tool_calls)
 
     @override
     def is_task_completed(self, llm_response: LLMResponse) -> bool:
@@ -252,6 +248,4 @@ If you are sure the issue has been solved, you should call the `task_done` to fi
     @override
     def task_incomplete_message(self) -> str:
         """Return a message indicating that the task is incomplete."""
-        return (
-            "ERROR! Your Patch is empty. Please provide a patch that fixes the problem."
-        )
+        return ("ERROR! Your Patch is empty. Please provide a patch that fixes the problem.")

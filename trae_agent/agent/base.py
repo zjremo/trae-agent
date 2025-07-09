@@ -176,17 +176,9 @@ class Agent(ABC):
                                 self._cli_console.update_status(step)
 
                             if self._model_parameters.parallel_tool_calls:
-                                tool_results = (
-                                    await self._tool_caller.parallel_tool_call(
-                                        tool_calls
-                                    )
-                                )
+                                tool_results = await self._tool_caller.parallel_tool_call(tool_calls)
                             else:
-                                tool_results = (
-                                    await self._tool_caller.sequential_tool_call(
-                                        tool_calls
-                                    )
-                                )
+                                tool_results = await self._tool_caller.sequential_tool_call(tool_calls)
                             step.tool_results = tool_results
 
                             # Display tool results
@@ -196,9 +188,7 @@ class Agent(ABC):
                             messages = []
                             for tool_result in tool_results:
                                 # Add tool result to conversation
-                                message = LLMMessage(
-                                    role="user", tool_result=tool_result
-                                )
+                                message = LLMMessage(role="user", tool_result=tool_result)
                                 messages.append(message)
 
                             reflection = self.reflect_on_result(tool_results)
@@ -305,9 +295,7 @@ class Agent(ABC):
         response_lower = llm_response.content.lower()
         return any(indicator in response_lower for indicator in completion_indicators)
 
-    def is_task_completed(
-        self, llm_response: LLMResponse
-    ) -> bool:  # pyright: ignore[reportUnusedParameter]
+    def is_task_completed(self, llm_response: LLMResponse) -> bool:  # pyright: ignore[reportUnusedParameter]
         """Check if the task is completed based on the response. Override for custom logic."""
         return True
 
