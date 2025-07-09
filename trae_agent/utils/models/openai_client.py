@@ -56,8 +56,7 @@ def chat(
                 model=model_parameters.model,
                 tools=tool_schemas if tool_schemas else openai.NOT_GIVEN,
                 temperature=model_parameters.temperature
-                if "o3" not in model_parameters.model
-                and "o4-mini" not in model_parameters.model
+                if "o3" not in model_parameters.model and "o4-mini" not in model_parameters.model
                 else openai.NOT_GIVEN,
                 top_p=model_parameters.top_p,
                 max_output_tokens=model_parameters.max_tokens,
@@ -70,9 +69,7 @@ def chat(
             continue
 
     if response is None:
-        raise ValueError(
-            f"Failed to get response from OpenAI after max retries: {error_message}"
-        )
+        raise ValueError(f"Failed to get response from OpenAI after max retries: {error_message}")
 
     message_history = api_call_input + response.output
 
@@ -84,9 +81,7 @@ def chat(
                 ToolCall(
                     call_id=output_block.call_id,
                     name=output_block.name,
-                    arguments=json.loads(output_block.arguments)
-                    if output_block.arguments
-                    else {},
+                    arguments=json.loads(output_block.arguments) if output_block.arguments else {},
                     id=output_block.id,
                 )
             )
