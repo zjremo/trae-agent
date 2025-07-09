@@ -107,14 +107,10 @@ class TestGoogleClient(unittest.TestCase):
         ]
         google_client.set_chat_history(messages)
 
-        self.assertEqual(
-            google_client.system_instruction, "You are a helpful assistant."
-        )
+        self.assertEqual(google_client.system_instruction, "You are a helpful assistant.")
         self.assertEqual(len(google_client.message_history), 1)
         self.assertEqual(google_client.message_history[0].role, "user")
-        self.assertEqual(
-            google_client.message_history[0].parts[0].text, "Hello, world!"
-        )
+        self.assertEqual(google_client.message_history[0].parts[0].text, "Hello, world!")
 
     @patch("trae_agent.utils.google_client.genai.Client")
     def test_google_chat(self, mock_genai_client):
@@ -126,9 +122,7 @@ class TestGoogleClient(unittest.TestCase):
         mock_response.candidates = [MagicMock()]
         mock_response.candidates[0].content.parts = [MagicMock(text="Hello!")]
         mock_response.candidates[0].finish_reason.name = "STOP"
-        mock_response.usage_metadata = MagicMock(
-            prompt_token_count=10, candidates_token_count=20
-        )
+        mock_response.usage_metadata = MagicMock(prompt_token_count=10, candidates_token_count=20)
         mock_model.generate_content.return_value = mock_response
         mock_genai_client.return_value.models = mock_model
 
@@ -145,9 +139,7 @@ class TestGoogleClient(unittest.TestCase):
         )
         google_client = GoogleClient(model_parameters)
         message = LLMMessage("user", "this is a test message")
-        response = google_client.chat(
-            messages=[message], model_parameters=model_parameters
-        )
+        response = google_client.chat(messages=[message], model_parameters=model_parameters)
 
         mock_model.generate_content.assert_called_once()
         self.assertEqual(response.content, "Hello!")
@@ -170,9 +162,7 @@ class TestGoogleClient(unittest.TestCase):
             MagicMock(function_call=mock_function_call, text=None)
         ]
         mock_response.candidates[0].finish_reason.name = "TOOL_CALL"
-        mock_response.usage_metadata = MagicMock(
-            prompt_token_count=30, candidates_token_count=15
-        )
+        mock_response.usage_metadata = MagicMock(prompt_token_count=30, candidates_token_count=15)
         mock_model.generate_content.return_value = mock_response
         mock_genai_client.return_value.models = mock_model
 
@@ -228,9 +218,7 @@ class TestGoogleClient(unittest.TestCase):
             LLMMessage(
                 "model",
                 "Hi there!",
-                tool_call=ToolCall(
-                    name="search", arguments={"query": "news"}, call_id="tool-123"
-                ),
+                tool_call=ToolCall(name="search", arguments={"query": "news"}, call_id="tool-123"),
             ),
             LLMMessage(
                 "tool",
