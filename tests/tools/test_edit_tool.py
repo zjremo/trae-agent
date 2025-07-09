@@ -62,9 +62,7 @@ class TestTextEditorTool(unittest.IsolatedAsyncioTestCase):
 
     async def test_invalid_command(self):
         result = await self.tool.execute(
-            ToolCallArguments(
-                {"command": "invalid", "path": str(self.test_file.absolute())}
-            )
+            ToolCallArguments({"command": "invalid", "path": str(self.test_file.absolute())})
         )
         self.assertEqual(result.error_code, -1)
         self.assertIn("Please provide a valid path", result.error)
@@ -101,9 +99,7 @@ class TestTextEditorTool(unittest.IsolatedAsyncioTestCase):
 
     async def test_view_directory(self):
         self.mock_file_system(exists=True, is_dir=True)
-        with patch(
-            "trae_agent.tools.edit_tool.run", new_callable=AsyncMock
-        ) as mock_run:
+        with patch("trae_agent.tools.edit_tool.run", new_callable=AsyncMock) as mock_run:
             mock_run.return_value = (0, "file1\nfile2", "")
             result = await self.tool.execute(
                 ToolCallArguments({"command": "view", "path": str(self.test_dir)})

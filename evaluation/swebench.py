@@ -76,9 +76,7 @@ class SWEBenchEvaluation:
 
         self.trae_config_file_name = trae_config_file_name
 
-        shutil.copyfile(
-            self.trae_config_file_name, self.working_dir / "trae_config_local.json"
-        )
+        shutil.copyfile(self.trae_config_file_name, self.working_dir / "trae_config_local.json")
 
         self.pull_images()
 
@@ -120,9 +118,7 @@ class SWEBenchEvaluation:
         self._check_images()
         print(f"Total number of images: {len(self.image_status)}")
         instance_ids = [
-            instance_id
-            for instance_id in self.image_status
-            if not self.image_status[instance_id]
+            instance_id for instance_id in self.image_status if not self.image_status[instance_id]
         ]
         print(f"Number of images to download: {len(instance_ids)}")
         if len(instance_ids) == 0:
@@ -158,9 +154,7 @@ class SWEBenchEvaluation:
             detach=True,
             tty=True,
             stdin_open=True,
-            volumes={
-                self.working_dir.absolute(): {"bind": "/trae-workspace", "mode": "rw"}
-            },
+            volumes={self.working_dir.absolute(): {"bind": "/trae-workspace", "mode": "rw"}},
             environment=self.docker_env_config.get("preparation_env", None),
         )
 
@@ -172,9 +166,7 @@ class SWEBenchEvaluation:
             "cd /trae-workspace/trae-agent && source $HOME/.local/bin/env && uv sync",
         ]
 
-        for command in tqdm(
-            commands, desc="Building trae-agent inside base Docker container"
-        ):
+        for command in tqdm(commands, desc="Building trae-agent inside base Docker container"):
             try:
                 new_command = f'/bin/bash -c "{command}"'
                 return_code, output = docker_exec(container, new_command)
@@ -228,9 +220,7 @@ class SWEBenchEvaluation:
             detach=True,
             tty=True,
             stdin_open=True,
-            volumes={
-                self.working_dir.absolute(): {"bind": "/trae-workspace", "mode": "rw"}
-            },
+            volumes={self.working_dir.absolute(): {"bind": "/trae-workspace", "mode": "rw"}},
             working_dir="/trae-workspace",
             environment=self.docker_env_config.get("experiment_env", None),
             stream=True,
@@ -321,9 +311,7 @@ class SWEBenchEvaluation:
             "latest",
         ]
 
-        process = subprocess.run(
-            cmd, capture_output=True, cwd=swebench_harness_path.as_posix()
-        )
+        process = subprocess.run(cmd, capture_output=True, cwd=swebench_harness_path.as_posix())
         print(process.stdout.decode())
         print(process.stderr.decode())
 
@@ -361,9 +349,7 @@ def main():
     argument_parser = argparse.ArgumentParser()
     argument_parser.add_argument("--dataset", type=str, default="SWE-bench_Verified")
     argument_parser.add_argument("--working-dir", type=str, default="./trae-workspace")
-    argument_parser.add_argument(
-        "--config-file", type=str, default="trae_config_local.json"
-    )
+    argument_parser.add_argument("--config-file", type=str, default="trae_config_local.json")
     argument_parser.add_argument(
         "--instance_ids",
         nargs="+",
@@ -377,9 +363,7 @@ def main():
         required=False,
         help="Only used for evaluation.",
     )
-    argument_parser.add_argument(
-        "--docker-env-config", type=str, default="", required=False
-    )
+    argument_parser.add_argument("--docker-env-config", type=str, default="", required=False)
     argument_parser.add_argument(
         "--run-id",
         type=str,

@@ -47,6 +47,4 @@ async def run(
     except asyncio.TimeoutError as exc:
         with contextlib.suppress(ProcessLookupError):
             process.kill()
-        raise TimeoutError(
-            f"Command '{cmd}' timed out after {timeout} seconds"
-        ) from exc
+        raise TimeoutError(f"Command '{cmd}' timed out after {timeout} seconds") from exc

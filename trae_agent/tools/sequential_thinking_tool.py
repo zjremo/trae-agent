@@ -165,14 +165,10 @@ You should:
         if "thought" not in arguments or not isinstance(arguments["thought"], str):
             raise ValueError("Invalid thought: must be a string")
 
-        if "thought_number" not in arguments or not isinstance(
-            arguments["thought_number"], int
-        ):
+        if "thought_number" not in arguments or not isinstance(arguments["thought_number"], int):
             raise ValueError("Invalid thought_number: must be a number")
 
-        if "total_thoughts" not in arguments or not isinstance(
-            arguments["total_thoughts"], int
-        ):
+        if "total_thoughts" not in arguments or not isinstance(arguments["total_thoughts"], int):
             raise ValueError("Invalid total_thoughts: must be a number")
 
         if "next_thought_needed" not in arguments or not isinstance(
@@ -222,9 +218,7 @@ You should:
         thought = str(arguments["thought"])
         thought_number = int(arguments["thought_number"])  # Already validated as int
         total_thoughts = int(arguments["total_thoughts"])  # Already validated as int
-        next_thought_needed = bool(
-            arguments["next_thought_needed"]
-        )  # Already validated as bool
+        next_thought_needed = bool(arguments["next_thought_needed"])  # Already validated as bool
 
         # Handle optional fields with proper type checking
         is_revision = None
@@ -237,10 +231,7 @@ You should:
         if "branch_id" in arguments and arguments["branch_id"] is not None:
             branch_id = str(arguments["branch_id"])
 
-        if (
-            "needs_more_thoughts" in arguments
-            and arguments["needs_more_thoughts"] is not None
-        ):
+        if "needs_more_thoughts" in arguments and arguments["needs_more_thoughts"] is not None:
             needs_more_thoughts = bool(arguments["needs_more_thoughts"])
 
         return ThoughtData(
@@ -265,7 +256,9 @@ You should:
             context = f" (revising thought {thought_data.revises_thought})"
         elif thought_data.branch_from_thought:
             prefix = "🌿 Branch"
-            context = f" (from thought {thought_data.branch_from_thought}, ID: {thought_data.branch_id})"
+            context = (
+                f" (from thought {thought_data.branch_from_thought}, ID: {thought_data.branch_id})"
+            )
         else:
             prefix = "💭 Thought"
             context = ""

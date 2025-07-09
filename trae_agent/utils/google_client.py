@@ -54,13 +54,9 @@ class GoogleClient(BaseLLMClient):
         reuse_history: bool = True,
     ) -> LLMResponse:
         """Send chat messages to Gemini with optional tool support."""
-        newly_parsed_messages, system_instruction_from_message = self.parse_messages(
-            messages
-        )
+        newly_parsed_messages, system_instruction_from_message = self.parse_messages(messages)
 
-        current_system_instruction = (
-            system_instruction_from_message or self.system_instruction
-        )
+        current_system_instruction = system_instruction_from_message or self.system_instruction
 
         if reuse_history:
             current_chat_contents = self.message_history + newly_parsed_messages
@@ -87,9 +83,7 @@ class GoogleClient(BaseLLMClient):
                     )
                     for tool in tools
                 ]
-                generation_config.tools = [
-                    types.Tool(function_declarations=declarations)
-                ]
+                generation_config.tools = [types.Tool(function_declarations=declarations)]
             except Exception as e:
                 tb = traceback.format_exc()
                 raise ValueError(
@@ -157,8 +151,7 @@ class GoogleClient(BaseLLMClient):
             usage = LLMUsage(
                 input_tokens=response.usage_metadata.prompt_token_count or 0,
                 output_tokens=response.usage_metadata.candidates_token_count or 0,
-                cache_read_input_tokens=response.usage_metadata.cached_content_token_count
-                or 0,
+                cache_read_input_tokens=response.usage_metadata.cached_content_token_count or 0,
                 cache_creation_input_tokens=0,
             )
 
@@ -192,13 +185,9 @@ class GoogleClient(BaseLLMClient):
             "gemini-2.5-flash-lite",
             "gemini-2.0-flash",
         ]
-        return any(
-            model_name in model_parameters.model for model_name in tool_capable_models
-        )
+        return any(model_name in model_parameters.model for model_name in tool_capable_models)
 
-    def parse_messages(
-        self, messages: list[LLMMessage]
-    ) -> tuple[list[types.Content], str | None]:
+    def parse_messages(self, messages: list[LLMMessage]) -> tuple[list[types.Content], str | None]:
         """Parse the messages to Gemini format, separating system instructions."""
         gemini_messages: list[types.Content] = []
         system_instruction: str | None = None
@@ -216,9 +205,7 @@ class GoogleClient(BaseLLMClient):
                 )
             elif msg.tool_call:
                 gemini_messages.append(
-                    types.Content(
-                        role="model", parts=[self.parse_tool_call(msg.tool_call)]
-                    )
+                    types.Content(role="model", parts=[self.parse_tool_call(msg.tool_call)])
                 )
             else:
                 role = "user" if msg.role == "user" else "model"
@@ -230,9 +217,7 @@ class GoogleClient(BaseLLMClient):
 
     def parse_tool_call(self, tool_call: ToolCall) -> types.Part:
         """Parse a ToolCall into a Gemini FunctionCall Part for history."""
-        return types.Part.from_function_call(
-            name=tool_call.name, args=tool_call.arguments
-        )
+        return types.Part.from_function_call(name=tool_call.name, args=tool_call.arguments)
 
     def parse_tool_call_result(self, tool_result: ToolResult) -> types.Part:
         """Parse a ToolResult into a Gemini FunctionResponse Part for history."""
@@ -244,13 +229,9 @@ class GoogleClient(BaseLLMClient):
                     result_content["result"] = tool_result.result
                 except (TypeError, OverflowError) as e:
                     tb = traceback.format_exc()
-                    serialization_error = (
-                        f"JSON serialization failed for tool result: {e}\n{tb}"
-                    )
+                    serialization_error = f"JSON serialization failed for tool result: {e}\n{tb}"
                     if tool_result.error:
-                        result_content["error"] = (
-                            f"{tool_result.error}\n\n{serialization_error}"
-                        )
+                        result_content["error"] = f"{tool_result.error}\n\n{serialization_error}"
                     else:
                         result_content["error"] = serialization_error
                     result_content["result"] = str(tool_result.result)
@@ -261,15 +242,11 @@ class GoogleClient(BaseLLMClient):
             result_content["error"] = tool_result.error
 
         if not result_content:
-            result_content["status"] = (
-                "Tool executed successfully but returned no output."
-            )
+            result_content["status"] = "Tool executed successfully but returned no output."
 
         if not hasattr(tool_result, "name") or not tool_result.name:
             raise AttributeError(
                 "ToolResult must have a 'name' attribute matching the function that was called."
             )
 
-        return types.Part.from_function_response(
-            name=tool_result.name, response=result_content
-        )
+        return types.Part.from_function_response(name=tool_result.name, response=result_content)

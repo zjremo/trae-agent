@@ -173,9 +173,7 @@ class OpenRouterClient(BaseLLMClient):
             )
         elif llm_response.content:
             self.message_history.append(
-                ChatCompletionAssistantMessageParam(
-                    content=llm_response.content, role="assistant"
-                )
+                ChatCompletionAssistantMessageParam(content=llm_response.content, role="assistant")
             )
 
         if self.trajectory_recorder:
@@ -204,14 +202,9 @@ class OpenRouterClient(BaseLLMClient):
             "llama-3",
             "command-r",
         ]
-        return any(
-            pattern in model_parameters.model.lower()
-            for pattern in tool_capable_patterns
-        )
+        return any(pattern in model_parameters.model.lower() for pattern in tool_capable_patterns)
 
-    def parse_messages(
-        self, messages: list[LLMMessage]
-    ) -> list[ChatCompletionMessageParam]:
+    def parse_messages(self, messages: list[LLMMessage]) -> list[ChatCompletionMessageParam]:
         openrouter_messages: list[ChatCompletionMessageParam] = []
         for msg in messages:
             if msg.tool_call:
@@ -259,9 +252,7 @@ class OpenRouterClient(BaseLLMClient):
                 if not msg.content:
                     raise ValueError("Assistant message content is required")
                 openrouter_messages.append(
-                    ChatCompletionAssistantMessageParam(
-                        content=msg.content, role="assistant"
-                    )
+                    ChatCompletionAssistantMessageParam(content=msg.content, role="assistant")
                 )
             else:
                 raise ValueError(f"Invalid message role: {msg.role}")

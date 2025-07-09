@@ -34,8 +34,7 @@ class LLMUsage:
             output_tokens=self.output_tokens + other.output_tokens,
             cache_creation_input_tokens=self.cache_creation_input_tokens
             + other.cache_creation_input_tokens,
-            cache_read_input_tokens=self.cache_read_input_tokens
-            + other.cache_read_input_tokens,
+            cache_read_input_tokens=self.cache_read_input_tokens + other.cache_read_input_tokens,
             reasoning_tokens=self.reasoning_tokens + other.reasoning_tokens,
         )
 

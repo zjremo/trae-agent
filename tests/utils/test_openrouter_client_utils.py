@@ -98,13 +98,9 @@ class TestOpenRouterClient(unittest.TestCase):
             None,
         )
         openrouter_client = OpenRouterClient(model_parameters)
-        self.assertEqual(
-            openrouter_client.supports_tool_calling(model_parameters), True
-        )
+        self.assertEqual(openrouter_client.supports_tool_calling(model_parameters), True)
         model_parameters.model = "no such model"
-        self.assertEqual(
-            openrouter_client.supports_tool_calling(model_parameters), False
-        )
+        self.assertEqual(openrouter_client.supports_tool_calling(model_parameters), False)
 
 
 if __name__ == "__main__":
