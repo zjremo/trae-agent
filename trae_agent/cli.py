@@ -48,7 +48,7 @@ def load_config(
 
     config: Config = Config(config_file)
     # Resolve model provider
-    resolved_provider = (resolve_config_value(provider, config.default_provider) or "openai")
+    resolved_provider = resolve_config_value(provider, config.default_provider) or "openai"
 
     config.default_provider = str(resolved_provider)
 
@@ -205,9 +205,7 @@ def run(
     except KeyboardInterrupt:
         console.print("\n[yellow]Task execution interrupted by user[/yellow]")
         if trajectory_path:
-            console.print(
-                f"[blue]Partial trajectory saved to: {trajectory_path}[/blue]"
-            )
+            console.print(f"[blue]Partial trajectory saved to: {trajectory_path}[/blue]")
         sys.exit(1)
     except Exception as e:
         console.print(f"\n[red]Unexpected error: {e}[/red]")
@@ -222,9 +220,7 @@ def run(
 @click.option("--model", "-m", help="Specific model to use")
 @click.option("--api-key", "-k", help="API key (or set via environment variable)")
 @click.option("--config-file", help="Path to configuration file", default="trae_config.json")
-@click.option(
-    "--max-steps", help="Maximum number of execution steps", type=int, default=20
-)
+@click.option("--max-steps", help="Maximum number of execution steps", type=int, default=20)
 @click.option("--trajectory-file", "-t", help="Path to save trajectory file")
 def interactive(
     provider: str | None = None,

@@ -200,9 +200,7 @@ class Agent(ABC):
                                 if self._cli_console:
                                     self._cli_console.update_status(step)
 
-                                messages.append(
-                                    LLMMessage(role="assistant", content=reflection)
-                                )
+                                messages.append(LLMMessage(role="assistant", content=reflection))
                         else:
                             messages = [
                                 LLMMessage(
