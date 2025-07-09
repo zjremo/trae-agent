@@ -54,6 +54,35 @@ class Agent(ABC):
         """Set the CLI console for this agent."""
         self._cli_console = cli_console
 
+    @property
+    def tools(self) -> list[Tool]:
+        """Get the tools available to this agent."""
+        return self._tools
+
+    @property
+    def task(self) -> str:
+        """Get the current task of the agent."""
+        return self._task
+
+    @task.setter
+    def task(self, value: str):
+        """Set the current task of the agent."""
+        self._task = value
+
+    @property
+    def initial_messages(self) -> list[LLMMessage]:
+        """Get the initial messages for the agent."""
+        return self._initial_messages
+
+    @property
+    def model_parameters(self) -> ModelParameters:
+        """Get the model parameters for the agent."""
+        return self._model_parameters
+
+    @property
+    def max_steps(self) -> int:
+        """Get the maximum number of steps for the agent."""
+        return self._max_steps
 
     @abstractmethod
     def new_task(

@@ -45,7 +45,7 @@ class TestTraeAgentExtended(unittest.TestCase):
 
     @patch("trae_agent.utils.trajectory_recorder.TrajectoryRecorder")
     def test_trajectory_setup(self, mock_recorder):
-        self.agent._task = "test task"
+        self.agent.task = "test task"
         _ = self.agent.setup_trajectory_recording()
         self.assertIsNotNone(self.agent._trajectory_recorder)
 
@@ -64,7 +64,7 @@ class TestTraeAgentExtended(unittest.TestCase):
 
         self.assertEqual(self.agent.project_path, self.test_project_path)
         self.assertEqual(self.agent.must_patch, "true")
-        self.assertEqual(len(self.agent._tools), 5)
+        self.assertEqual(len(self.agent.tools), 5)
         self.assertTrue(any(tool.get_name() == "bash" for tool in self.agent._tools))
 
     @patch("subprocess.check_output")
@@ -117,7 +117,7 @@ class TestTraeAgentExtended(unittest.TestCase):
         self.agent.new_task("test", {"project_path": self.test_project_path}, tools)
         tool_names = [tool.get_name() for tool in self.agent._tools]
 
-        self.assertEqual(len(self.agent._tools), len(tools))
+        self.assertEqual(len(self.agent.tools), len(tools))
         self.assertIn("bash", tool_names)
         self.assertIn("str_replace_based_edit_tool", tool_names)
         self.assertIn("sequentialthinking", tool_names)
@@ -131,19 +131,13 @@ class TestTraeAgentExtended(unittest.TestCase):
             self.agent.llm_client = 5
 
         with self.assertRaises(AttributeError):
-            _ = self.agent.max_steps
+            self.agent.max_steps = None
 
         with self.assertRaises(AttributeError):
-            _ = self.agent.model_parameters
+            self.agent.model_parameters = False
 
         with self.assertRaises(AttributeError):
-            _ = self.agent.initial_messages
-
-        with self.assertRaises(AttributeError):
-            _ = self.agent.task
-
-        with self.assertRaises(AttributeError):
-            _ = self.agent.tools
+            self.agent.initial_messages = "random"
 
         with self.assertRaises(AttributeError):
             _ = self.agent.tool_caller
