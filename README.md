@@ -5,13 +5,13 @@
  [![Pre-commit](https://github.com/bytedance/trae-agent/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/bytedance/trae-agent/actions/workflows/pre-commit.yml)
  [![Unit Tests](https://github.com/bytedance/trae-agent/actions/workflows/unit-test.yml/badge.svg)](https://github.com/bytedance/trae-agent/actions/workflows/unit-test.yml)
 
-*Please note that this project is still in the alpha stage and being actively developed. We welcome various contributions from the community.*
 
 **Trae Agent** is an LLM-based agent for general purpose software engineering tasks. It provides a powerful CLI interface that can understand natural language instructions and execute complex software engineering workflows using various tools and LLM providers.
 
-**Difference with Other CLI Agents:** Trae Agent offers a transparent, modular architecture that researchers and developers can easily modify, extend, and analyze. The open-source nature allows for deep customization of agent behaviors, tool implementations, and workflow patterns, making it an ideal platform for **studying AI agent architectures, conducting ablation studies, and developing novel agent capabilities**. This ***research-friendly design*** enables the academic and open-source communities to contribute to and build upon the foundational agent framework, fostering innovation in the rapidly evolving field of AI agents.
+**Project Status:** The project is still being actively developed. Please refer to [docs/roadmap.md](docs/roadmap.md) and [CONTRIBUTING](CONTRIBUTING.md) if you are willing to help us improve Trae Agent.
 
-**Project Status:** Trae Agent is currently an experimental project. We are working hard on supporting more LLM providers, enriched command-line interface, developing more tools and adding MCP supports. Building a robust unit testing framework for Trae Agent is also our priority.
+**Difference with Other CLI Agents:** Trae Agent offers a transparent, modular architecture that researchers and developers can easily modify, extend, and analyze, making it an ideal platform for **studying AI agent architectures, conducting ablation studies, and developing novel agent capabilities**. This ***research-friendly design*** enables the academic and open-source communities to contribute to and build upon the foundational agent framework, fostering innovation in the rapidly evolving field of AI agents.
+
 
 ## ✨ Features
 
@@ -287,11 +287,11 @@ Trajectory files contain:
 - **Tool Usage**: Which tools were called and their results
 - **Metadata**: Timestamps, token usage, and execution metrics
 
-For more details, see [TRAJECTORY_RECORDING.md](TRAJECTORY_RECORDING.md).
+For more details, see [docs/TRAJECTORY_RECORDING.md](docs/TRAJECTORY_RECORDING.md).
 
 ## 🤝 Contributing
 
-For detailed contribution guidelines, please refer to [CONTRIBUTING.md](CONTRIBUTING).
+For detailed contribution guidelines, please refer to [CONTRIBUTING.md](CONTRIBUTING.md).
 
 1. Fork the repository
 2. Set up a development install(`make install-dev pre-commit-install`)
