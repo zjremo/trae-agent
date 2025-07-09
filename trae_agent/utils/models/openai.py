@@ -6,16 +6,13 @@ from typing import Optional, override
 
 import openai
 from openai.types.responses import (
-    FunctionToolParam,
-    ResponseFunctionToolCallParam,
     ResponseInputParam,
 )
-from openai.types.responses.response_input_param import FunctionCallOutput
 
 from ...tools.base import Tool
 from ..base_client import BaseLLMClient
 from ..config import ModelParameters
-from ..llm_basics import LLMMessage, LLMResponse, LLMUsage
+from ..llm_basics import LLMMessage
 
 """
     This file provides an base class for open ai competitible clients

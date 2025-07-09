@@ -1,8 +1,6 @@
-import os
-import random
 import json
+import random
 import time
-from typing import override
 
 import openai
 from openai.types.responses import (
@@ -15,7 +13,6 @@ from openai.types.responses.response_input_param import FunctionCallOutput
 from ...tools.base import Tool, ToolCall, ToolResult
 from ...utils.config import ModelParameters
 from ...utils.trajectory_recorder import TrajectoryRecorder
-from ..base_client import BaseLLMClient
 from ..llm_basics import LLMMessage, LLMResponse, LLMUsage
 
 
@@ -25,7 +22,7 @@ def chat(
     client: openai.OpenAI,
     tools: list[Tool] | None = None,
     reuse_history: bool = True,
-    message_history: ResponseInputParam = [],
+    message_history: ResponseInputParam | None = None,
     trajectory_recorder: TrajectoryRecorder | None = None,
 ) -> LLMResponse:
     """Send chat messages to OpenAI with optional tool support."""
