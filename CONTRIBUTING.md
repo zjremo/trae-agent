@@ -23,11 +23,15 @@ There are many ways you can contribute to Trae Agent:
    ```
 3. Set up your development environment:
    ```bash
-   # Install dependencies, uv will take care of the python interpreter and venv creation
-   uv sync --all-extras
-   # Install pre-commit hooks
-   pre-commit install
+   make install-dev
+   make pre-commit-install
    ```
+
+## Running Tests
+
+```bash
+make test
+```
 
 ## Development Process
 

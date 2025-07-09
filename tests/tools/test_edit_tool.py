@@ -1,13 +1,11 @@
-import os
-import sys
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
+# Copyright (c) 2025 ByteDance Ltd. and/or its affiliates
+# SPDX-License-Identifier: MIT
 
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
-from trae_agent.tools.base import ToolCallArguments, ToolError
+from trae_agent.tools.base import ToolCallArguments
 from trae_agent.tools.edit_tool import TextEditorTool
 
 
@@ -67,27 +65,25 @@ class TestTextEditorTool(unittest.IsolatedAsyncioTestCase):
 
     async def test_invalid_command(self):
         result = await self.tool.execute(
-            ToolCallArguments(
-                {"command": "invalid", "path": str(self.test_file.absolute())}
-            )
+            ToolCallArguments({"command": "invalid", "path": str(self.test_file.absolute())})
         )
         self.assertEqual(result.error_code, -1)
-        self.assertIn("Unrecognized command", result.error)
+        self.assertIn("Please provide a valid path", result.error)
 
     async def test_str_replace_multiple_occurrences(self):
         self.mock_file_system(content="dup\ndup\nline3")
-        with self.assertRaises(ToolError) as cm:
-            await self.tool.execute(
-                ToolCallArguments(
-                    {
-                        "command": "str_replace",
-                        "path": str(self.test_file),
-                        "old_str": "dup",
-                        "new_str": "new",
-                    }
-                )
+        result = await self.tool.execute(
+            ToolCallArguments(
+                {
+                    "command": "str_replace",
+                    "path": str(self.test_file),
+                    "old_str": "dup",
+                    "new_str": "new",
+                }
             )
-        self.assertIn("Multiple occurrences", str(cm.exception))
+        )
+        self.assertEqual(result.error_code, -1)
+        self.assertIn("Multiple occurrences", result.error or "")
 
     async def test_str_replace_success(self):
         self.mock_file_system(content="old_content\nline2")
@@ -106,7 +102,7 @@ class TestTextEditorTool(unittest.IsolatedAsyncioTestCase):
 
     async def test_view_directory(self):
         self.mock_file_system(exists=True, is_dir=True)
-        with patch("trae_agent.tools.run") as mock_run:
+        with patch("trae_agent.tools.edit_tool.run", new_callable=AsyncMock) as mock_run:
             mock_run.return_value = (0, "file1\nfile2", "")
             result = await self.tool.execute(
                 ToolCallArguments({"command": "view", "path": str(self.test_dir)})

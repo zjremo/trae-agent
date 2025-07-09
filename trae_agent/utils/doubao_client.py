@@ -59,9 +59,7 @@ class DoubaoClient(BaseLLMClient):
         # if self.api_version is None:
         #     raise ValueError("Doubao API version not provided. ")
 
-        self.client: openai.OpenAI = openai.OpenAI(
-            base_url=self.base_url, api_key=self.api_key
-        )
+        self.client: openai.OpenAI = openai.OpenAI(base_url=self.base_url, api_key=self.api_key)
         self.message_history: list[ChatCompletionMessageParam] = []
 
     @override
@@ -174,9 +172,7 @@ class DoubaoClient(BaseLLMClient):
             )
         elif llm_response.content:
             self.message_history.append(
-                ChatCompletionAssistantMessageParam(
-                    content=llm_response.content, role="assistant"
-                )
+                ChatCompletionAssistantMessageParam(content=llm_response.content, role="assistant")
             )
 
         if self.trajectory_recorder:
@@ -194,9 +190,7 @@ class DoubaoClient(BaseLLMClient):
     def supports_tool_calling(self, model_parameters: ModelParameters) -> bool:
         return True
 
-    def parse_messages(
-        self, messages: list[LLMMessage]
-    ) -> list[ChatCompletionMessageParam]:
+    def parse_messages(self, messages: list[LLMMessage]) -> list[ChatCompletionMessageParam]:
         doubao_messages: list[ChatCompletionMessageParam] = []
         for msg in messages:
             if msg.tool_call:
@@ -244,9 +238,7 @@ class DoubaoClient(BaseLLMClient):
                 if not msg.content:
                     raise ValueError("Assistant message content is required")
                 doubao_messages.append(
-                    ChatCompletionAssistantMessageParam(
-                        content=msg.content, role="assistant"
-                    )
+                    ChatCompletionAssistantMessageParam(content=msg.content, role="assistant")
                 )
             else:
                 raise ValueError(f"Invalid message role: {msg.role}")
