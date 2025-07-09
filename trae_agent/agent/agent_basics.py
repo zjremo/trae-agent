@@ -71,11 +71,7 @@ class AgentExecution:
     execution_time: float = 0.0
 
     def __repr__(self) -> str:
-        return (
-            f"<AgentExecution task={self.task!r} "
-            f"steps={len(self.steps)} "
-            f"success={self.success}>"
-        )
+        return f"<AgentExecution task={self.task!r} steps={len(self.steps)} success={self.success}>"
 
 
 class AgentError(Exception):

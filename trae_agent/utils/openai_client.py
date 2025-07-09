@@ -42,9 +42,7 @@ class OpenAIClient(BaseLLMClient):
             # we should use the base url from the environment variable
             self.base_url = os.environ["OPENAI_BASE_URL"]
 
-        self.client: openai.OpenAI = openai.OpenAI(
-            api_key=self.api_key, base_url=self.base_url
-        )
+        self.client: openai.OpenAI = openai.OpenAI(api_key=self.api_key, base_url=self.base_url)
         self.message_history: ResponseInputParam = []
 
     @override

@@ -106,9 +106,6 @@ class Config:
                     top_k=int(provider_config.get("top_k", 0)),
                     max_retries=int(provider_config.get("max_retries", 10)),
                     parallel_tool_calls=bool(provider_config.get("parallel_tool_calls", False)),
-                    base_url=str(provider_config.get("base_url"))
-                    if "base_url" in provider_config
-                    else None,
                     api_version=str(provider_config.get("api_version"))
                     if "api_version" in provider_config
                     else None,

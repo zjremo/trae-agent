@@ -50,9 +50,7 @@ class TestConfigBaseURL(unittest.TestCase):
 
         # If there are no model providers, the default provider is anthropic
         # and the default base_url is https://api.anthropic.com
-        self.assertEqual(
-            config.model_providers["anthropic"].base_url, "https://api.anthropic.com"
-        )
+        self.assertEqual(config.model_providers["anthropic"].base_url, "https://api.anthropic.com")
 
     def test_multiple_providers_with_different_base_urls(self):
         """Test multiple providers each with their own base_url."""
@@ -146,9 +144,7 @@ class TestConfigBaseURL(unittest.TestCase):
         )
 
         # when env variable is set, the base_url should be the env variable
-        with patch.dict(
-            os.environ, {"OPENAI_BASE_URL": "https://env-openai.example.com/v1"}
-        ):
+        with patch.dict(os.environ, {"OPENAI_BASE_URL": "https://env-openai.example.com/v1"}):
             client = OpenAIClient(model_params)
 
             mock_openai.assert_called_once_with(
