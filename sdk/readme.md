@@ -14,3 +14,5 @@ result = run(
     verbose=True
 )
 ```
+
+Currently, we assume the configuration file is named trae_config.json.
