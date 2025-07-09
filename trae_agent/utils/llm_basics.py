@@ -3,7 +3,6 @@
 
 
 from dataclasses import dataclass
-from typing import override
 
 from ..tools.base import ToolCall, ToolResult
 

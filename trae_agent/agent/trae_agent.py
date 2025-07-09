@@ -47,8 +47,6 @@ class TraeAgent(Agent):
         recorder = TrajectoryRecorder(trajectory_path)
         self.set_trajectory_recorder(recorder)
 
-        
-
         return recorder.get_trajectory_path()
 
     @override
