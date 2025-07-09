@@ -1,6 +1,7 @@
 import json
 import random
 import time
+from typing import Tuple
 
 import openai
 from openai.types.responses import (
@@ -24,7 +25,7 @@ def chat(
     reuse_history: bool = True,
     message_history: ResponseInputParam | None = None,
     trajectory_recorder: TrajectoryRecorder | None = None,
-) -> LLMResponse:
+) -> Tuple[LLMResponse, ResponseInputParam]:
     """Send chat messages to OpenAI with optional tool support."""
     openai_messages: ResponseInputParam = parse_messages(messages)
 
@@ -168,7 +169,7 @@ def parse_messages(messages: list[LLMMessage]) -> ResponseInputParam:
     return openai_messages
 
 
-def parse_tool_call(tool_call: ToolResult):
+def parse_tool_call(tool_call: ToolCall) -> ResponseFunctionToolCallParam:
     return ResponseFunctionToolCallParam(
         call_id=tool_call.call_id,
         name=tool_call.name,

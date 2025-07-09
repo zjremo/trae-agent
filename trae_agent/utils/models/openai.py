@@ -12,7 +12,7 @@ from openai.types.responses import (
 from ...tools.base import Tool
 from ..base_client import BaseLLMClient
 from ..config import ModelParameters
-from ..llm_basics import LLMMessage
+from ..llm_basics import LLMMessage, LLMResponse
 
 """
     This file provides an base class for open ai competitible clients
@@ -69,7 +69,7 @@ class OpenAIClientBase(BaseLLMClient):
         model_parameters: ModelParameters,
         tools: list[Tool] | None = None,
         reuse_history: bool = True,
-    ):
+    ) -> LLMResponse:
         match self.provider:
             case _:
                 from .openai_client import chat as openai_chat
