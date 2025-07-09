@@ -1,3 +1,6 @@
+# Copyright (c) 2025 ByteDance Ltd. and/or its affiliates
+# SPDX-License-Identifier: MIT
+
 import os
 import unittest
 from unittest.mock import patch
