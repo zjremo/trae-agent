@@ -18,6 +18,7 @@ from .base import Agent
 TraeAgentToolNames = [
     "str_replace_based_edit_tool",
     "sequentialthinking",
+    "json_edit_tool",
     "task_done",
     "bash",
 ]
