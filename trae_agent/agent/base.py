@@ -122,9 +122,7 @@ class Agent(ABC):
                     if self._cli_console:
                         self._cli_console.update_status(step)
 
-                    llm_response = self._llm_client.chat(
-                        messages, self._model_parameters, self._tools
-                    )
+                    llm_response = self._llm_client.chat(messages, self._model_parameters, self._tools)
                     step.llm_response = llm_response
 
                     # Display step with LLM response
