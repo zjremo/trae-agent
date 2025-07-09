@@ -47,7 +47,7 @@ class TestTraeAgentExtended(unittest.TestCase):
     def test_trajectory_setup(self, mock_recorder):
         self.agent.task = "test task"
         _ = self.agent.setup_trajectory_recording()
-        self.assertIsNotNone(self.agent._trajectory_recorder)
+        self.assertIsNotNone(self.agent.trajectory_recorder)
 
     def test_new_task_initialization(self):
         with self.assertRaises(AgentError):
@@ -65,7 +65,7 @@ class TestTraeAgentExtended(unittest.TestCase):
         self.assertEqual(self.agent.project_path, self.test_project_path)
         self.assertEqual(self.agent.must_patch, "true")
         self.assertEqual(len(self.agent.tools), 5)
-        self.assertTrue(any(tool.get_name() == "bash" for tool in self.agent._tools))
+        self.assertTrue(any(tool.get_name() == "bash" for tool in self.agent.tools))
 
     @patch("subprocess.check_output")
     @patch("os.chdir")
@@ -115,7 +115,7 @@ class TestTraeAgentExtended(unittest.TestCase):
             "task_done",
         ]
         self.agent.new_task("test", {"project_path": self.test_project_path}, tools)
-        tool_names = [tool.get_name() for tool in self.agent._tools]
+        tool_names = [tool.get_name() for tool in self.agent.tools]
 
         self.assertEqual(len(self.agent.tools), len(tools))
         self.assertIn("bash", tool_names)

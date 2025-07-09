@@ -39,6 +39,11 @@ class Agent(ABC):
     def llm_client(self) -> LLMClient:
         return self._llm_client
 
+    @property
+    def trajectory_recorder(self) -> TrajectoryRecorder | None:
+        """Get the trajectory recorder for this agent."""
+        return self._trajectory_recorder
+
     def _set_trajectory_recorder(self, recorder: TrajectoryRecorder | None) -> None:
         """Set the trajectory recorder for this agent."""
         self._trajectory_recorder = recorder
