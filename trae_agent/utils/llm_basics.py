@@ -3,7 +3,6 @@
 
 
 from dataclasses import dataclass
-from typing import override
 
 from ..tools.base import ToolCall, ToolResult
 
@@ -39,7 +38,6 @@ class LLMUsage:
             reasoning_tokens=self.reasoning_tokens + other.reasoning_tokens,
         )
 
-    @override
     def __str__(self) -> str:
         return f"LLMUsage(input_tokens={self.input_tokens}, output_tokens={self.output_tokens}, cache_creation_input_tokens={self.cache_creation_input_tokens}, cache_read_input_tokens={self.cache_read_input_tokens}, reasoning_tokens={self.reasoning_tokens})"
 
