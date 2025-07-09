@@ -3,7 +3,6 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
 
 from ..tools.base import ToolCall, ToolResult
 from ..utils.llm_basics import LLMResponse, LLMUsage
@@ -38,14 +37,14 @@ class AgentStep:
 
     step_number: int
     state: AgentState
-    thought: Optional[str] = None
-    tool_calls: Optional[list[ToolCall]] = None
-    tool_results: Optional[list[ToolResult]] = None
-    llm_response: Optional[LLMResponse] = None
-    reflection: Optional[str] = None
-    error: Optional[str] = None
-    extra: Optional[dict[str, object]] = None
-    llm_usage: Optional[LLMUsage] = None
+    thought: str | None = None
+    tool_calls: list[ToolCall] | None = None
+    tool_results: list[ToolResult] | None = None
+    llm_response: LLMResponse | None = None
+    reflection: str | None = None
+    error: str | None = None
+    extra: dict[str, object] | None = None
+    llm_usage: LLMUsage | None = None
 
     def __repr__(self) -> str:
         return (
@@ -66,9 +65,9 @@ class AgentExecution:
 
     task: str
     steps: list[AgentStep]
-    final_result: Optional[str] = None
+    final_result: str | None = None
     success: bool = False
-    total_tokens: Optional[LLMUsage] = None
+    total_tokens: LLMUsage | None = None
     execution_time: float = 0.0
 
     def __repr__(self) -> str:
