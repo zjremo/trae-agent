@@ -22,7 +22,7 @@ from ..llm_basics import LLMMessage, LLMResponse
 class OpenAIClientBase(BaseLLMClient):
     def __init__(self, model_parameters: ModelParameters, provider: Optional[str]):
         """
-        The init function should seperate different clients to specific
+        The init function should separate different clients to specific
         chat , support tool calling and all kinds of parsing
         """
 
