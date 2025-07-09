@@ -46,9 +46,7 @@ class OpenRouterClient(BaseLLMClient):
             )
 
         # Use OpenAI SDK with OpenRouter's base URL
-        self.client: openai.OpenAI = openai.OpenAI(
-            api_key=self.api_key, base_url=self.base_url
-        )
+        self.client: openai.OpenAI = openai.OpenAI(api_key=self.api_key, base_url=self.base_url)
         self.message_history: list[ChatCompletionMessageParam] = []
 
     @override

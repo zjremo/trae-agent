@@ -64,7 +64,7 @@ class TestTraeAgentExtended(unittest.TestCase):
 
         self.assertEqual(self.agent.project_path, self.test_project_path)
         self.assertEqual(self.agent.must_patch, "true")
-        self.assertEqual(len(self.agent.tools), 4)
+        self.assertEqual(len(self.agent.tools), 5)
         self.assertTrue(any(tool.get_name() == "bash" for tool in self.agent.tools))
 
     @patch("subprocess.check_output")

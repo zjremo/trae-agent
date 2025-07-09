@@ -95,15 +95,11 @@ JSONPath syntax supported:
         try:
             operation = str(arguments.get("operation", "")).lower()
             if not operation:
-                return ToolExecResult(
-                    error="Operation parameter is required", error_code=-1
-                )
+                return ToolExecResult(error="Operation parameter is required", error_code=-1)
 
             file_path_str = str(arguments.get("file_path", ""))
             if not file_path_str:
-                return ToolExecResult(
-                    error="file_path parameter is required", error_code=-1
-                )
+                return ToolExecResult(error="file_path parameter is required", error_code=-1)
 
             file_path = Path(file_path_str)
             if not file_path.is_absolute():
@@ -113,9 +109,7 @@ JSONPath syntax supported:
 
             json_path_arg = arguments.get("json_path")
             if json_path_arg is not None and not isinstance(json_path_arg, str):
-                return ToolExecResult(
-                    error="json_path parameter must be a string.", error_code=-1
-                )
+                return ToolExecResult(error="json_path parameter must be a string.", error_code=-1)
 
             value = arguments.get("value")
 
@@ -150,9 +144,7 @@ JSONPath syntax supported:
                     )
 
             if operation == "remove":
-                return await self._remove_json_value(
-                    file_path, json_path_arg, pretty_print_arg
-                )
+                return await self._remove_json_value(file_path, json_path_arg, pretty_print_arg)
 
             return ToolExecResult(
                 error=f"Unknown operation: {operation}. Supported operations: view, set, add, remove",
@@ -160,9 +152,7 @@ JSONPath syntax supported:
             )
 
         except Exception as e:
-            return ToolExecResult(
-                error=f"JSON edit tool error: {str(e)}", error_code=-1
-            )
+            return ToolExecResult(error=f"JSON edit tool error: {str(e)}", error_code=-1)
 
     async def _load_json_file(self, file_path: Path) -> dict | list:
         """Load and parse JSON file."""
@@ -198,13 +188,9 @@ JSONPath syntax supported:
         try:
             return jsonpath_parse(json_path_str)
         except JSONPathError as e:
-            raise ToolError(
-                f"Invalid JSONPath expression '{json_path_str}': {str(e)}"
-            ) from e
+            raise ToolError(f"Invalid JSONPath expression '{json_path_str}': {str(e)}") from e
         except Exception as e:
-            raise ToolError(
-                f"Error parsing JSONPath '{json_path_str}': {str(e)}"
-            ) from e
+            raise ToolError(f"Error parsing JSONPath '{json_path_str}': {str(e)}") from e
 
     async def _view_json(
         self, file_path: Path, json_path_str: str | None, pretty_print: bool
@@ -217,9 +203,7 @@ JSONPath syntax supported:
             matches = jsonpath_expr.find(data)
 
             if not matches:
-                return ToolExecResult(
-                    output=f"No matches found for JSONPath: {json_path_str}"
-                )
+                return ToolExecResult(output=f"No matches found for JSONPath: {json_path_str}")
 
             result_data = [match.value for match in matches]
             if len(result_data) == 1:
@@ -230,9 +214,7 @@ JSONPath syntax supported:
             else:
                 output = json.dumps(result_data, ensure_ascii=False)
 
-            return ToolExecResult(
-                output=f"JSONPath '{json_path_str}' matches:\n{output}"
-            )
+            return ToolExecResult(output=f"JSONPath '{json_path_str}' matches:\n{output}")
         else:
             if pretty_print:
                 output = json.dumps(data, indent=2, ensure_ascii=False)
@@ -274,9 +256,7 @@ JSONPath syntax supported:
 
         parent_matches = parent_path.find(data)
         if not parent_matches:
-            return ToolExecResult(
-                error=f"Parent path not found: {parent_path}", error_code=-1
-            )
+            return ToolExecResult(error=f"Parent path not found: {parent_path}", error_code=-1)
 
         for match in parent_matches:
             parent_obj = match.value
@@ -303,9 +283,7 @@ JSONPath syntax supported:
                 )
 
         await self._save_json_file(file_path, data, pretty_print)
-        return ToolExecResult(
-            output=f"Successfully added value at JSONPath '{json_path_str}'"
-        )
+        return ToolExecResult(output=f"Successfully added value at JSONPath '{json_path_str}'")
 
     async def _remove_json_value(
         self, file_path: Path, json_path_str: str, pretty_print: bool

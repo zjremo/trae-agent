@@ -2,6 +2,8 @@
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
  ![Alpha]( https://img.shields.io/badge/Status-Alpha-red)
+ [![Pre-commit](https://github.com/bytedance/trae-agent/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/bytedance/trae-agent/actions/workflows/pre-commit.yml)
+ [![Unit Tests](https://github.com/bytedance/trae-agent/actions/workflows/unit-test.yml/badge.svg)](https://github.com/bytedance/trae-agent/actions/workflows/unit-test.yml)
 
 *Please note that this project is still in the alpha stage and being actively developed. We welcome various contributions from the community.*
 
@@ -30,7 +32,7 @@ We strongly recommend using [uv](https://docs.astral.sh/uv/) to setup the projec
 ```bash
 git clone https://github.com/bytedance/trae-agent.git
 cd trae-agent
-uv sync
+make install
 ```
 
 ### Setup API Keys
@@ -279,8 +281,10 @@ For more details, see [TRAJECTORY_RECORDING.md](TRAJECTORY_RECORDING.md).
 
 ## 🤝 Contributing
 
+For detailed contribution guidelines, please refer to [CONTRIBUTING.md](CONTRIBUTING).
+
 1. Fork the repository
-2. Set up a development install(`uv sync --all-extras && pre-commit install`)
+2. Set up a development install(`make install-dev pre-commit-install`)
 3. Create a feature branch (`git checkout -b feature/amazing-feature`)
 4. Make your changes
 5. Add tests for new functionality
