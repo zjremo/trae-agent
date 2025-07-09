@@ -66,15 +66,12 @@ class TraeAgent(Agent):
         # Get the model provider from the LLM client
         provider = self.llm_client.provider.value
         self.tools: list[Tool] = [
-            tools_registry[tool_name](model_provider=provider)
-            for tool_name in tool_names
+            tools_registry[tool_name](model_provider=provider) for tool_name in tool_names
         ]
         self.tool_caller: ToolExecutor = ToolExecutor(self.tools)
 
         self.initial_messages: list[LLMMessage] = []
-        self.initial_messages.append(
-            LLMMessage(role="system", content=self.get_system_prompt())
-        )
+        self.initial_messages.append(LLMMessage(role="system", content=self.get_system_prompt()))
 
         user_message = ""
         if not extra_args:
@@ -106,9 +103,7 @@ class TraeAgent(Agent):
     @override
     async def execute_task(self) -> AgentExecution:
         """Execute the task and finalize trajectory recording."""
-        console_task = (
-            asyncio.create_task(self.cli_console.start()) if self.cli_console else None
-        )
+        console_task = asyncio.create_task(self.cli_console.start()) if self.cli_console else None
         execution = await super().execute_task()
         if self.cli_console and console_task and not console_task.done():
             await console_task
@@ -232,9 +227,7 @@ If you are sure the issue has been solved, you should call the `task_done` to fi
         """Check if the LLM indicates that the task is completed."""
         if llm_response.tool_calls is None:
             return False
-        return any(
-            tool_call.name == "task_done" for tool_call in llm_response.tool_calls
-        )
+        return any(tool_call.name == "task_done" for tool_call in llm_response.tool_calls)
 
     @override
     def is_task_completed(self, llm_response: LLMResponse) -> bool:
@@ -250,6 +243,4 @@ If you are sure the issue has been solved, you should call the `task_done` to fi
     @override
     def task_incomplete_message(self) -> str:
         """Return a message indicating that the task is incomplete."""
-        return (
-            "ERROR! Your Patch is empty. Please provide a patch that fixes the problem."
-        )
+        return "ERROR! Your Patch is empty. Please provide a patch that fixes the problem."

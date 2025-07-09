@@ -26,14 +26,10 @@ class TestBashTool(unittest.IsolatedAsyncioTestCase):
         self.assertIn("restart", param_names)
 
     async def test_command_error_handling(self):
-        result = await self.tool.execute(
-            ToolCallArguments({"command": "invalid_command_123"})
-        )
+        result = await self.tool.execute(ToolCallArguments({"command": "invalid_command_123"}))
 
         # 修复断言：检查错误信息是否包含'not found'或'not recognized'（Windows系统）
-        self.assertTrue(
-            any(s in result.error.lower() for s in ["not found", "not recognized"])
-        )
+        self.assertTrue(any(s in result.error.lower() for s in ["not found", "not recognized"]))
 
     async def test_session_restart(self):
         # 确保会话已初始化
@@ -50,15 +46,11 @@ class TestBashTool(unittest.IsolatedAsyncioTestCase):
         self.assertIsNotNone(self.tool._session)
 
         # Verify new session works
-        result = await self.tool.execute(
-            ToolCallArguments({"command": "echo new session"})
-        )
+        result = await self.tool.execute(ToolCallArguments({"command": "echo new session"}))
         self.assertIn("new session", result.output)
 
     async def test_successful_command_execution(self):
-        result = await self.tool.execute(
-            ToolCallArguments({"command": "echo hello world"})
-        )
+        result = await self.tool.execute(ToolCallArguments({"command": "echo hello world"}))
 
         # 修复：检查返回码是否为0
         self.assertEqual(result.error_code, 0)

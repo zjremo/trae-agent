@@ -71,6 +71,10 @@ exclude_lines = [
     "@(abc\\.)?abstractmethod",
 ]
 
+
+[tool.ruff]
+line-length = 100
+
 [tool.ruff.lint]
 select = [
     "B",

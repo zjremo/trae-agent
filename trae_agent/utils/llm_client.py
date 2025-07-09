@@ -83,6 +83,6 @@ class LLMClient:
 
     def supports_tool_calling(self, model_parameters: ModelParameters) -> bool:
         """Check if the current client supports tool calling."""
-        return hasattr(
-            self.client, "supports_tool_calling"
-        ) and self.client.supports_tool_calling(model_parameters)
+        return hasattr(self.client, "supports_tool_calling") and self.client.supports_tool_calling(
+            model_parameters
+        )
