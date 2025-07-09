@@ -291,6 +291,12 @@ Trae Agent comes with several built-in tools:
   - Mark tasks as successfully completed
   - Provide final results and summaries
 
+- **json_edit_tool**: Edit and manipulate JSON files
+  - `view` - Display the entire JSON file or content at specific JSONPaths
+  - `set` - Update existing values at specified JSONPaths
+  - `add` - Add new key-value pairs to objects or append elements to arrays at a given JSONPath
+  - `remove` - Delete elements at specified JSONPaths
+
 ## 📊 Trajectory Recording
 
 Trae Agent automatically records detailed execution trajectories for debugging and analysis:
