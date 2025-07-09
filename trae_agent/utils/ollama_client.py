@@ -216,9 +216,7 @@ class OllamaClient(BaseLLMClient):
                 elif msg.role == "user":
                     openai_messages.append({"role": "user", "content": msg.content})
                 elif msg.role == "assistant":
-                    openai_messages.append(
-                        {"role": "assistant", "content": msg.content}
-                    )
+                    openai_messages.append({"role": "assistant", "content": msg.content})
                 else:
                     raise ValueError(f"Invalid message role: {msg.role}")
         return openai_messages
@@ -232,9 +230,7 @@ class OllamaClient(BaseLLMClient):
             type="function_call",
         )
 
-    def parse_tool_call_result(
-        self, tool_call_result: ToolResult
-    ) -> FunctionCallOutput:
+    def parse_tool_call_result(self, tool_call_result: ToolResult) -> FunctionCallOutput:
         """Parse the tool call result from the LLM response."""
         result: str = ""
         if tool_call_result.result:

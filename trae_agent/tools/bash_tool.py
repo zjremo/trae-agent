@@ -90,9 +90,7 @@ class _BashSession:
         assert self._process.stderr
 
         # send command to the process
-        self._process.stdin.write(
-            command.encode() + f"; echo '{self._sentinel}'\n".encode()
-        )
+        self._process.stdin.write(command.encode() + f"; echo '{self._sentinel}'\n".encode())
         await self._process.stdin.drain()
 
         # read output from the process, until the sentinel is found
@@ -120,9 +118,7 @@ class _BashSession:
         if error.endswith("\n"):
             error = error[:-1]
 
-        error_code = (
-            self._process.returncode if self._process.returncode is not None else 0
-        )
+        error_code = self._process.returncode if self._process.returncode is not None else 0
 
         # clear the buffers so that the next output can be read correctly
         self._process.stdout._buffer.clear()  # type: ignore[attr-defined]
@@ -196,9 +192,7 @@ class BashTool(Tool):
                 self._session = _BashSession()
                 await self._session.start()
             except Exception as e:
-                return ToolExecResult(
-                    error=f"Error starting bash session: {e}", error_code=-1
-                )
+                return ToolExecResult(error=f"Error starting bash session: {e}", error_code=-1)
 
         command = str(arguments["command"]) if "command" in arguments else None
         if command is None:
@@ -209,6 +203,4 @@ class BashTool(Tool):
         try:
             return await self._session.run(command)
         except Exception as e:
-            return ToolExecResult(
-                error=f"Error running bash command: {e}", error_code=-1
-            )
+            return ToolExecResult(error=f"Error running bash command: {e}", error_code=-1)

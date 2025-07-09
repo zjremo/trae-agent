@@ -46,9 +46,7 @@ class TrajectoryRecorder:
         }
         self._start_time: datetime | None = None
 
-    def start_recording(
-        self, task: str, provider: str, model: str, max_steps: int
-    ) -> None:
+    def start_recording(self, task: str, provider: str, model: str, max_steps: int) -> None:
         """Start recording a new trajectory.
 
         Args:
@@ -98,12 +96,8 @@ class TrajectoryRecorder:
                 "model": response.model,
                 "finish_reason": response.finish_reason,
                 "usage": {
-                    "input_tokens": response.usage.input_tokens
-                    if response.usage
-                    else None,
-                    "output_tokens": response.usage.output_tokens
-                    if response.usage
-                    else None,
+                    "input_tokens": response.usage.input_tokens if response.usage else None,
+                    "output_tokens": response.usage.output_tokens if response.usage else None,
                     "cache_creation_input_tokens": getattr(
                         response.usage, "cache_creation_input_tokens", None
                     )
@@ -114,15 +108,11 @@ class TrajectoryRecorder:
                     )
                     if response.usage
                     else None,
-                    "reasoning_tokens": getattr(
-                        response.usage, "reasoning_tokens", None
-                    )
+                    "reasoning_tokens": getattr(response.usage, "reasoning_tokens", None)
                     if response.usage
                     else None,
                 },
-                "tool_calls": [
-                    self._serialize_tool_call(tc) for tc in response.tool_calls
-                ]
+                "tool_calls": [self._serialize_tool_call(tc) for tc in response.tool_calls]
                 if response.tool_calls
                 else None,
             },
@@ -167,18 +157,14 @@ class TrajectoryRecorder:
                 "model": llm_response.model,
                 "finish_reason": llm_response.finish_reason,
                 "usage": {
-                    "input_tokens": llm_response.usage.input_tokens
-                    if llm_response.usage
-                    else None,
+                    "input_tokens": llm_response.usage.input_tokens if llm_response.usage else None,
                     "output_tokens": llm_response.usage.output_tokens
                     if llm_response.usage
                     else None,
                 }
                 if llm_response.usage
                 else None,
-                "tool_calls": [
-                    self._serialize_tool_call(tc) for tc in llm_response.tool_calls
-                ]
+                "tool_calls": [self._serialize_tool_call(tc) for tc in llm_response.tool_calls]
                 if llm_response.tool_calls
                 else None,
             }
@@ -197,9 +183,7 @@ class TrajectoryRecorder:
         self.trajectory_data["agent_steps"].append(step_data)
         self.save_trajectory()
 
-    def finalize_recording(
-        self, success: bool, final_result: str | None = None
-    ) -> None:
+    def finalize_recording(self, success: bool, final_result: str | None = None) -> None:
         """Finalize the trajectory recording.
 
         Args:

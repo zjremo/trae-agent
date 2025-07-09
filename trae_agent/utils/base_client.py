@@ -17,9 +17,7 @@ class BaseLLMClient(ABC):
         self.api_key: str = model_parameters.api_key
         self.base_url: str | None = model_parameters.base_url
         self.api_version: str | None = model_parameters.api_version
-        self.trajectory_recorder: TrajectoryRecorder | None = (
-            None  # TrajectoryRecorder instance
-        )
+        self.trajectory_recorder: TrajectoryRecorder | None = None  # TrajectoryRecorder instance
 
     def set_trajectory_recorder(self, recorder: TrajectoryRecorder | None) -> None:
         """Set the trajectory recorder for this client."""

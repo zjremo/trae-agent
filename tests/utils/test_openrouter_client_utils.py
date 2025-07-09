@@ -1,3 +1,6 @@
+# Copyright (c) 2025 ByteDance Ltd. and/or its affiliates
+# SPDX-License-Identifier: MIT
+
 """
 This file provides basic testing with openrouter client. This purpose of the test is to check if it run properly
 
@@ -98,13 +101,9 @@ class TestOpenRouterClient(unittest.TestCase):
             None,
         )
         openrouter_client = OpenRouterClient(model_parameters)
-        self.assertEqual(
-            openrouter_client.supports_tool_calling(model_parameters), True
-        )
+        self.assertEqual(openrouter_client.supports_tool_calling(model_parameters), True)
         model_parameters.model = "no such model"
-        self.assertEqual(
-            openrouter_client.supports_tool_calling(model_parameters), False
-        )
+        self.assertEqual(openrouter_client.supports_tool_calling(model_parameters), False)
 
 
 if __name__ == "__main__":

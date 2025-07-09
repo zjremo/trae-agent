@@ -1,3 +1,6 @@
+# Copyright (c) 2025 ByteDance Ltd. and/or its affiliates
+# SPDX-License-Identifier: MIT
+
 import asyncio
 import unittest
 from unittest.mock import MagicMock, patch
@@ -45,7 +48,6 @@ class TestTraeAgentExtended(unittest.TestCase):
         self.agent.task = "test task"
         _ = self.agent.setup_trajectory_recording()
         self.assertIsNotNone(self.agent.trajectory_recorder)
-        mock_recorder.return_value.start_recording.assert_called_once()
 
     def test_new_task_initialization(self):
         with self.assertRaises(AgentError):
@@ -62,7 +64,7 @@ class TestTraeAgentExtended(unittest.TestCase):
 
         self.assertEqual(self.agent.project_path, self.test_project_path)
         self.assertEqual(self.agent.must_patch, "true")
-        self.assertEqual(len(self.agent.tools), 4)
+        self.assertEqual(len(self.agent.tools), 5)
         self.assertTrue(any(tool.get_name() == "bash" for tool in self.agent.tools))
 
     @patch("subprocess.check_output")

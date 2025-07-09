@@ -39,9 +39,7 @@ class ToolResult:
     id: str | None = None  # OpenAI-specific field
 
 
-ToolCallArguments = dict[
-    str, str | int | float | dict[str, object] | list[object] | None
-]
+ToolCallArguments = dict[str, str | int | float | dict[str, object] | list[object] | None]
 
 
 @dataclass
@@ -206,12 +204,8 @@ class ToolExecutor:
 
     async def parallel_tool_call(self, tool_calls: list[ToolCall]) -> list[ToolResult]:
         """Execute tool calls in parallel"""
-        return await asyncio.gather(
-            *[self.execute_tool_call(call) for call in tool_calls]
-        )
+        return await asyncio.gather(*[self.execute_tool_call(call) for call in tool_calls])
 
-    async def sequential_tool_call(
-        self, tool_calls: list[ToolCall]
-    ) -> list[ToolResult]:
+    async def sequential_tool_call(self, tool_calls: list[ToolCall]) -> list[ToolResult]:
         """Execute tool calls in sequential"""
         return [await self.execute_tool_call(call) for call in tool_calls]

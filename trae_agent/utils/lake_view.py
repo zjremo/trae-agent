@@ -106,9 +106,7 @@ class LakeView:
 
         return " · ".join([KNOWN_TAGS[tag] + tag if emoji else tag for tag in tags])
 
-    async def extract_task_in_step(
-        self, prev_step: str, this_step: str
-    ) -> tuple[str, str]:
+    async def extract_task_in_step(self, prev_step: str, this_step: str) -> tuple[str, str]:
         llm_messages = [
             LLMMessage(
                 role="user",
@@ -133,9 +131,7 @@ class LakeView:
 
         retry = 0
         while retry < 10 and (
-            "</task>" not in content
-            or "<details>" not in content
-            or "</details>" not in content
+            "</task>" not in content or "<details>" not in content or "</details>" not in content
         ):
             retry += 1
             llm_response = self.lakeview_llm_client.chat(
@@ -145,11 +141,7 @@ class LakeView:
             )
             content = llm_response.content.strip()
 
-        if (
-            "</task>" not in content
-            or "<details>" not in content
-            or "</details>" not in content
-        ):
+        if "</task>" not in content or "<details>" not in content or "</details>" not in content:
             return "", ""
 
         desc_task, _, desc_details = content.rpartition("</task>")
@@ -160,8 +152,7 @@ class LakeView:
 
     async def extract_tag_in_step(self, step: str) -> list[str]:
         steps_fmt = "\n\n".join(
-            f'<step id="{ind + 1}">\n{s.strip()}\n</step>'
-            for ind, s in enumerate(self.steps)
+            f'<step id="{ind + 1}">\n{s.strip()}\n</step>' for ind, s in enumerate(self.steps)
         )
 
         if len(steps_fmt) > 300_000:
