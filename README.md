@@ -25,10 +25,10 @@
 
 ### Installation
 
-We strongly recommend using [UV](https://docs.astral.sh/uv/) to setup the project.
+We strongly recommend using [uv](https://docs.astral.sh/uv/) to setup the project.
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/bytedance/trae-agent.git
 cd trae-agent
 uv sync
 ```
@@ -56,6 +56,9 @@ export OPENROUTER_API_KEY="your-openrouter-api-key"
 # Optional: For OpenRouter rankings
 export OPENROUTER_SITE_URL="https://your-site.com"
 export OPENROUTER_SITE_NAME="Your App Name"
+
+# Optional: If you want to use a specific openai compatible api provider, you can set the base url here
+export OPENAI_BASE_URL="your-openai-compatible-api-base-url"
 ```
 
 Although you can pass your API key directly using the `api_key` argument, we suggest utilizing [python-dotenv](https://pypi.org/project/python-dotenv/) to add `MODEL_API_KEY="My API Key"` to your `.env` file. This approach helps prevent your API key from being exposed in source control.

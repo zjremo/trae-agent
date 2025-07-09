@@ -1,3 +1,6 @@
+# Copyright (c) 2025 ByteDance Ltd. and/or its affiliates
+# SPDX-License-Identifier: MIT
+
 import unittest
 from pathlib import Path
 from unittest.mock import AsyncMock, patch

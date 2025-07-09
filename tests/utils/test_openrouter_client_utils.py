@@ -1,3 +1,6 @@
+# Copyright (c) 2025 ByteDance Ltd. and/or its affiliates
+# SPDX-License-Identifier: MIT
+
 """
 This file provides basic testing with openrouter client. This purpose of the test is to check if it run properly
 

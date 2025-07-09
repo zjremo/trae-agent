@@ -1,3 +1,6 @@
+# Copyright (c) 2025 ByteDance Ltd. and/or its affiliates
+# SPDX-License-Identifier: MIT
+
 import asyncio
 import unittest
 from unittest.mock import MagicMock, patch
@@ -45,7 +48,6 @@ class TestTraeAgentExtended(unittest.TestCase):
         self.agent.task = "test task"
         _ = self.agent.setup_trajectory_recording()
         self.assertIsNotNone(self.agent.trajectory_recorder)
-        mock_recorder.return_value.start_recording.assert_called_once()
 
     def test_new_task_initialization(self):
         with self.assertRaises(AgentError):

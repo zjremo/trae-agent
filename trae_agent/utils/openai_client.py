@@ -37,7 +37,14 @@ class OpenAIClient(BaseLLMClient):
                 "OpenAI API key not provided. Set OPENAI_API_KEY in environment variables or config file."
             )
 
-        self.client: openai.OpenAI = openai.OpenAI(api_key=self.api_key)
+        if "OPENAI_BASE_URL" in os.environ:
+            # If OPENAI_BASE_URL is set, which means the user wants to use a specific openai compatible api provider,
+            # we should use the base url from the environment variable
+            self.base_url = os.environ["OPENAI_BASE_URL"]
+
+        self.client: openai.OpenAI = openai.OpenAI(
+            api_key=self.api_key, base_url=self.base_url
+        )
         self.message_history: ResponseInputParam = []
 
     @override

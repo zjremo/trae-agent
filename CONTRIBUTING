@@ -29,6 +29,12 @@ There are many ways you can contribute to Trae Agent:
    pre-commit install
    ```
 
+## Running Tests
+
+```bash
+uv run pytest tests/ -v
+```
+
 ## Development Process
 
 1. Create a new branch:
