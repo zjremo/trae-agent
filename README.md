@@ -16,7 +16,7 @@
 ## ✨ Features
 
 - 🌊 **Lakeview**: Provides short and concise summarisation for agent steps
-- 🤖 **Multi-LLM Support**: Works with OpenAI, Anthropic, Doubao, Azure and OpenRouter APIs
+- 🤖 **Multi-LLM Support**: Works with OpenAI, Anthropic, Doubao, Azure, OpenRouter, Ollama and Google Gemini APIs
 - 🛠️ **Rich Tool Ecosystem**: File editing, bash execution, sequential thinking, and more
 - 🎯 **Interactive Mode**: Conversational interface for iterative development
 - 📊 **Trajectory Recording**: Detailed logging of all agent actions for debugging and analysis
@@ -55,6 +55,9 @@ export DOUBAO_API_BASE_URL="your-model-provider-base-url"
 # For OpenRouter
 export OPENROUTER_API_KEY="your-openrouter-api-key"
 
+# For Google Gemini
+export GOOGLE_API_KEY="your-google-api-key"
+
 # Optional: For OpenRouter rankings
 export OPENROUTER_SITE_URL="https://your-site.com"
 export OPENROUTER_SITE_NAME="Your App Name"
@@ -73,6 +76,9 @@ trae-cli run "Create a hello world Python script"
 
 # Run with Doubao
 trae-cli run "Create a hello world Python script" --provider doubao --model doubao-seed-1.6
+
+# Run with Google Gemini
+trae-cli run "Create a hello world Python script" --provider google --model gemini-2.5-flash
 ```
 
 ## 📖 Usage
@@ -93,6 +99,9 @@ trae-cli run "Fix the bug in main.py" --provider anthropic --model claude-sonnet
 # Using OpenRouter with any supported model
 trae-cli run "Optimize this code" --provider openrouter --model "openai/gpt-4o"
 trae-cli run "Add documentation" --provider openrouter --model "anthropic/claude-3-5-sonnet"
+
+# Using Google Gemini
+trae-cli run "Implement a data parsing function" --provider google --model gemini-2.5-pro
 
 # With custom working directory
 trae-cli run "Add unit tests for the utils module" --working-dir /path/to/project
@@ -177,6 +186,16 @@ Trae Agent uses a JSON configuration file (`trae_config.json`) for settings:
       "top_k": 0,
       "max_retries": 10
     },
+    "ollama": {
+      "api_key": "ollama",
+      "base_url": "http://localhost:11434",
+      "model": "model_name",
+      "max_tokens": 4096,
+      "temperature": 0.5,
+      "top_p": 1,
+      "top_k": 0,
+      "max_retries": 10
+    },
     "openrouter": {
       "api_key": "your_openrouter_api_key",
       "model": "openai/gpt-4o",
@@ -224,6 +243,9 @@ trae-cli run "Review this code" --provider openrouter --model "anthropic/claude-
 # Use Gemini through OpenRouter
 trae-cli run "Generate docs" --provider openrouter --model "google/gemini-pro"
 
+# Use Gemini directly
+trae-cli run "Analyze this dataset" --provider google --model gemini-2.5-flash
+
 # Use Qwen through Ollama
 trae-cli run "Comment this code" --provider ollama --model "qwen3"
 ```
@@ -241,6 +263,7 @@ trae-cli run "Comment this code" --provider ollama --model "qwen3"
 - `ANTHROPIC_API_KEY` - Anthropic API key
 - `GOOGLE_API_KEY` - Google API key
 - `OPENROUTER_API_KEY` - OpenRouter API key
+- `GOOGLE_API_KEY` - Google Gemini API key
 - `OPENROUTER_SITE_URL` - (Optional) Your site URL for OpenRouter rankings
 - `OPENROUTER_SITE_NAME` - (Optional) Your site name for OpenRouter rankings
 
@@ -317,6 +340,7 @@ For detailed contribution guidelines, please refer to [CONTRIBUTING.md](CONTRIBU
   - OpenAI API key (for OpenAI models)
   - Anthropic API key (for Anthropic models)
   - OpenRouter API key (for OpenRouter models)
+  - Google API key (for Google Gemini models)
 
 ## 🔧 Troubleshooting
 
@@ -335,6 +359,7 @@ echo $OPENAI_API_KEY
 echo $ANTHROPIC_API_KEY
 echo $GOOGLE_API_KEY
 echo $OPENROUTER_API_KEY
+echo $GOOGLE_API_KEY
 
 # Check configuration
 trae-cli show-config
@@ -353,3 +378,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 We thank Anthropic for building the [anthropic-quickstart](https://github.com/anthropics/anthropic-quickstarts) project that served as a valuable reference for the tool ecosystem.
+
