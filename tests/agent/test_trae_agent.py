@@ -47,7 +47,7 @@ class TestTraeAgentExtended(unittest.TestCase):
     def test_trajectory_setup(self, mock_recorder):
         self.agent.task = "test task"
         _ = self.agent.setup_trajectory_recording()
-        self.assertIsNotNone(self.agent.trajectory_recorder)
+        self.assertIsNotNone(self.agent._trajectory_recorder)
 
     def test_new_task_initialization(self):
         with self.assertRaises(AgentError):
