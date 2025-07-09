@@ -48,9 +48,7 @@ def load_config(
 
     config: Config = Config(config_file)
     # Resolve model provider
-    resolved_provider = (
-        resolve_config_value(provider, config.default_provider) or "openai"
-    )
+    resolved_provider = resolve_config_value(provider, config.default_provider) or "openai"
 
     config.default_provider = str(resolved_provider)
 
@@ -126,9 +124,7 @@ def cli():
 @click.option("--max-steps", help="Maximum number of execution steps", type=int)
 @click.option("--working-dir", "-w", help="Working directory for the agent")
 @click.option("--must-patch", "-mp", is_flag=True, help="Whether to patch the code")
-@click.option(
-    "--config-file", help="Path to configuration file", default="trae_config.json"
-)
+@click.option("--config-file", help="Path to configuration file", default="trae_config.json")
 @click.option("--trajectory-file", "-t", help="Path to save trajectory file")
 @click.option("--patch-path", "-pp", help="Path to patch file")
 def run(
@@ -209,9 +205,7 @@ def run(
     except KeyboardInterrupt:
         console.print("\n[yellow]Task execution interrupted by user[/yellow]")
         if trajectory_path:
-            console.print(
-                f"[blue]Partial trajectory saved to: {trajectory_path}[/blue]"
-            )
+            console.print(f"[blue]Partial trajectory saved to: {trajectory_path}[/blue]")
         sys.exit(1)
     except Exception as e:
         console.print(f"\n[red]Unexpected error: {e}[/red]")
@@ -225,12 +219,8 @@ def run(
 @click.option("--provider", "-p", help="LLM provider to use")
 @click.option("--model", "-m", help="Specific model to use")
 @click.option("--api-key", "-k", help="API key (or set via environment variable)")
-@click.option(
-    "--config-file", help="Path to configuration file", default="trae_config.json"
-)
-@click.option(
-    "--max-steps", help="Maximum number of execution steps", type=int, default=20
-)
+@click.option("--config-file", help="Path to configuration file", default="trae_config.json")
+@click.option("--max-steps", help="Maximum number of execution steps", type=int, default=20)
 @click.option("--trajectory-file", "-t", help="Path to save trajectory file")
 def interactive(
     provider: str | None = None,
@@ -245,9 +235,7 @@ def interactive(
     Args:
         tasks: the task that you want your agent to solve. This is required to be in the input
     """
-    config = load_config(
-        provider, model, api_key, config_file=config_file, max_steps=max_steps
-    )
+    config = load_config(provider, model, api_key, config_file=config_file, max_steps=max_steps)
 
     console.print(
         Panel(
@@ -312,9 +300,7 @@ def interactive(
             # Set up trajectory recording for this task
             trajectory_path = agent.setup_trajectory_recording(trajectory_file)
 
-            console.print(
-                f"[blue]Trajectory will be saved to: {trajectory_path}[/blue]"
-            )
+            console.print(f"[blue]Trajectory will be saved to: {trajectory_path}[/blue]")
 
             task_args = {
                 "project_path": working_dir,
@@ -341,9 +327,7 @@ def interactive(
 
 
 @cli.command()
-@click.option(
-    "--config-file", help="Path to configuration file", default="trae_config.json"
-)
+@click.option("--config-file", help="Path to configuration file", default="trae_config.json")
 def show_config(config_file: str):
     """Show current configuration settings."""
     config_path = Path(config_file)
@@ -377,9 +361,7 @@ Using default settings and environment variables.""",
         provider_table.add_column("Value", style="green")
 
         provider_table.add_row("Model", provider_config.model or "Not set")
-        provider_table.add_row(
-            "API Key", "Set" if provider_config.api_key else "Not set"
-        )
+        provider_table.add_row("API Key", "Set" if provider_config.api_key else "Not set")
         provider_table.add_row("Max Tokens", str(provider_config.max_tokens))
         provider_table.add_row("Temperature", str(provider_config.temperature))
         provider_table.add_row("Top P", str(provider_config.top_p))

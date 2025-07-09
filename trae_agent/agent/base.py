@@ -22,9 +22,7 @@ class Agent(ABC):
             config.default_provider, config.model_providers[config.default_provider]
         )
         self.max_steps: int = config.max_steps
-        self.model_parameters: ModelParameters = config.model_providers[
-            config.default_provider
-        ]
+        self.model_parameters: ModelParameters = config.model_providers[config.default_provider]
         self.initial_messages: list[LLMMessage] = []
         self.task: str = ""
         self.tools: list[Tool] = []
@@ -78,9 +76,7 @@ class Agent(ABC):
                     if self.cli_console:
                         self.cli_console.update_status(step)
 
-                    llm_response = self.llm_client.chat(
-                        messages, self.model_parameters, self.tools
-                    )
+                    llm_response = self.llm_client.chat(messages, self.model_parameters, self.tools)
                     step.llm_response = llm_response
 
                     # Display step with LLM response
@@ -119,9 +115,7 @@ class Agent(ABC):
                         else:
                             step.state = AgentState.THINKING
                             messages = [
-                                LLMMessage(
-                                    role="user", content=self.task_incomplete_message()
-                                )
+                                LLMMessage(role="user", content=self.task_incomplete_message())
                             ]
                     else:
                         # Check if the response contains a tool call
@@ -137,16 +131,10 @@ class Agent(ABC):
                                 self.cli_console.update_status(step)
 
                             if self.model_parameters.parallel_tool_calls:
-                                tool_results = (
-                                    await self.tool_caller.parallel_tool_call(
-                                        tool_calls
-                                    )
-                                )
+                                tool_results = await self.tool_caller.parallel_tool_call(tool_calls)
                             else:
-                                tool_results = (
-                                    await self.tool_caller.sequential_tool_call(
-                                        tool_calls
-                                    )
+                                tool_results = await self.tool_caller.sequential_tool_call(
+                                    tool_calls
                                 )
                             step.tool_results = tool_results
 
@@ -157,9 +145,7 @@ class Agent(ABC):
                             messages = []
                             for tool_result in tool_results:
                                 # Add tool result to conversation
-                                message = LLMMessage(
-                                    role="user", tool_result=tool_result
-                                )
+                                message = LLMMessage(role="user", tool_result=tool_result)
                                 messages.append(message)
 
                             reflection = self.reflect_on_result(tool_results)
@@ -171,9 +157,7 @@ class Agent(ABC):
                                 if self.cli_console:
                                     self.cli_console.update_status(step)
 
-                                messages.append(
-                                    LLMMessage(role="assistant", content=reflection)
-                                )
+                                messages.append(LLMMessage(role="assistant", content=reflection))
                         else:
                             messages = [
                                 LLMMessage(
@@ -225,9 +209,7 @@ class Agent(ABC):
                     break
 
             if step_number > self.max_steps and not execution.success:
-                execution.final_result = (
-                    "Task execution exceeded maximum steps without completion."
-                )
+                execution.final_result = "Task execution exceeded maximum steps without completion."
 
         except Exception as e:
             execution.final_result = f"Agent execution failed: {str(e)}"

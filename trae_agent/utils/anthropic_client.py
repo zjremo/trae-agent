@@ -32,7 +32,9 @@ class AnthropicClient(BaseLLMClient):
                 "Anthropic API key not provided. Set ANTHROPIC_API_KEY in environment variables or config file."
             )
 
-        self.client: anthropic.Anthropic = anthropic.Anthropic(api_key=self.api_key)
+        self.client: anthropic.Anthropic = anthropic.Anthropic(
+            api_key=self.api_key, base_url=self.base_url
+        )
         self.message_history: list[anthropic.types.MessageParam] = []
         self.system_message: str | anthropic.NotGiven = anthropic.NOT_GIVEN
 
@@ -51,14 +53,10 @@ class AnthropicClient(BaseLLMClient):
     ) -> LLMResponse:
         """Send chat messages to Anthropic with optional tool support."""
         # Convert messages to Anthropic format
-        anthropic_messages: list[anthropic.types.MessageParam] = self.parse_messages(
-            messages
-        )
+        anthropic_messages: list[anthropic.types.MessageParam] = self.parse_messages(messages)
 
         self.message_history = (
-            self.message_history + anthropic_messages
-            if reuse_history
-            else anthropic_messages
+            self.message_history + anthropic_messages if reuse_history else anthropic_messages
         )
 
         # Add tools if provided
@@ -77,9 +75,7 @@ class AnthropicClient(BaseLLMClient):
                     )
                 elif tool.name == "bash":
                     tool_schemas.append(
-                        anthropic.types.ToolBash20250124Param(
-                            name="bash", type="bash_20250124"
-                        )
+                        anthropic.types.ToolBash20250124Param(name="bash", type="bash_20250124")
                     )
                 else:
                     tool_schemas.append(
@@ -124,9 +120,7 @@ class AnthropicClient(BaseLLMClient):
             if content_block.type == "text":
                 content += content_block.text
                 self.message_history.append(
-                    anthropic.types.MessageParam(
-                        role="assistant", content=content_block.text
-                    )
+                    anthropic.types.MessageParam(role="assistant", content=content_block.text)
                 )
             elif content_block.type == "tool_use":
                 tool_calls.append(
@@ -137,9 +131,7 @@ class AnthropicClient(BaseLLMClient):
                     )
                 )
                 self.message_history.append(
-                    anthropic.types.MessageParam(
-                        role="assistant", content=[content_block]
-                    )
+                    anthropic.types.MessageParam(role="assistant", content=[content_block])
                 )
 
         usage = None
@@ -147,8 +139,7 @@ class AnthropicClient(BaseLLMClient):
             usage = LLMUsage(
                 input_tokens=response.usage.input_tokens,
                 output_tokens=response.usage.output_tokens,
-                cache_creation_input_tokens=response.usage.cache_creation_input_tokens
-                or 0,
+                cache_creation_input_tokens=response.usage.cache_creation_input_tokens or 0,
                 cache_read_input_tokens=response.usage.cache_read_input_tokens or 0,
             )
 
@@ -188,16 +179,12 @@ class AnthropicClient(BaseLLMClient):
         ]
         return any(model in model_parameters.model for model in tool_capable_models)
 
-    def parse_messages(
-        self, messages: list[LLMMessage]
-    ) -> list[anthropic.types.MessageParam]:
+    def parse_messages(self, messages: list[LLMMessage]) -> list[anthropic.types.MessageParam]:
         """Parse the messages to Anthropic format."""
         anthropic_messages: list[anthropic.types.MessageParam] = []
         for msg in messages:
             if msg.role == "system":
-                self.system_message = (
-                    msg.content if msg.content else anthropic.NOT_GIVEN
-                )
+                self.system_message = msg.content if msg.content else anthropic.NOT_GIVEN
             elif msg.tool_result:
                 anthropic_messages.append(
                     anthropic.types.MessageParam(

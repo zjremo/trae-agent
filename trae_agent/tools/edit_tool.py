@@ -120,16 +120,13 @@ Notes for using the `str_replace` command:
                 if view_range is None:
                     return await self.view(_path, None)
                 if not (
-                    isinstance(view_range, list)
-                    and all(isinstance(i, int) for i in view_range)
+                    isinstance(view_range, list) and all(isinstance(i, int) for i in view_range)
                 ):
                     return ToolExecResult(
                         error="Parameter `view_range` should be a list of integers.",
                         error_code=-1,
                     )
-                view_range_int: list[int] = [
-                    i for i in view_range if isinstance(i, int)
-                ]
+                view_range_int: list[int] = [i for i in view_range if isinstance(i, int)]
                 return await self.view(_path, view_range_int)
             elif command == "create":
                 file_text = arguments.get("file_text", None)
@@ -155,17 +152,13 @@ Notes for using the `str_replace` command:
                     )
                 return self.str_replace(_path, old_str, new_str)
             elif command == "insert":
-                insert_line = (
-                    arguments.get("insert_line") if "insert_line" in arguments else None
-                )
+                insert_line = arguments.get("insert_line") if "insert_line" in arguments else None
                 if not isinstance(insert_line, int):
                     return ToolExecResult(
                         error="Parameter `insert_line` is required and should be integer for command: insert",
                         error_code=-1,
                     )
-                new_str_to_insert = (
-                    arguments.get("new_str") if "new_str" in arguments else None
-                )
+                new_str_to_insert = arguments.get("new_str") if "new_str" in arguments else None
                 if not isinstance(new_str_to_insert, str):
                     return ToolExecResult(
                         error="Parameter `new_str` is required for command: insert",
@@ -189,9 +182,7 @@ Notes for using the `str_replace` command:
             )
         # Check if path exists
         if not path.exists() and command != "create":
-            raise ToolError(
-                f"The path {path} does not exist. Please provide a valid path."
-            )
+            raise ToolError(f"The path {path} does not exist. Please provide a valid path.")
         if path.exists() and command == "create":
             raise ToolError(
                 f"File already exists at: {path}. Cannot overwrite files using command `create`."
@@ -202,9 +193,7 @@ Notes for using the `str_replace` command:
                 f"The path {path} is a directory and only the `view` command can be used on directories"
             )
 
-    async def view(
-        self, path: Path, view_range: list[int] | None = None
-    ) -> ToolExecResult:
+    async def view(self, path: Path, view_range: list[int] | None = None) -> ToolExecResult:
         """Implement the view command"""
         if path.is_dir():
             if view_range:
@@ -212,9 +201,7 @@ Notes for using the `str_replace` command:
                     "The `view_range` parameter is not allowed when `path` points to a directory."
                 )
 
-            return_code, stdout, stderr = await run(
-                rf"find {path} -maxdepth 2 -not -path '*/\.*'"
-            )
+            return_code, stdout, stderr = await run(rf"find {path} -maxdepth 2 -not -path '*/\.*'")
             if not stderr:
                 stdout = f"Here's the files and directories up to 2 levels deep in {path}, excluding hidden items:\n{stdout}\n"
             return ToolExecResult(error_code=return_code, output=stdout, error=stderr)
@@ -223,9 +210,7 @@ Notes for using the `str_replace` command:
         init_line = 1
         if view_range:
             if len(view_range) != 2 or not all(isinstance(i, int) for i in view_range):  # pyright: ignore[reportUnnecessaryIsInstance]
-                raise ToolError(
-                    "Invalid `view_range`. It should be a list of two integers."
-                )
+                raise ToolError("Invalid `view_range`. It should be a list of two integers.")
             file_lines = file_content.split("\n")
             n_lines_file = len(file_lines)
             init_line, final_line = view_range
@@ -251,9 +236,7 @@ Notes for using the `str_replace` command:
             output=self._make_output(file_content, str(path), init_line=init_line)
         )
 
-    def str_replace(
-        self, path: Path, old_str: str, new_str: str | None
-    ) -> ToolExecResult:
+    def str_replace(self, path: Path, old_str: str, new_str: str | None) -> ToolExecResult:
         """Implement the str_replace command, which replaces old_str with new_str in the file content"""
         # Read the file content
         file_content = self.read_file(path).expandtabs()
@@ -268,11 +251,7 @@ Notes for using the `str_replace` command:
             )
         elif occurrences > 1:
             file_content_lines = file_content.split("\n")
-            lines = [
-                idx + 1
-                for idx, line in enumerate(file_content_lines)
-                if old_str in line
-            ]
+            lines = [idx + 1 for idx, line in enumerate(file_content_lines) if old_str in line]
             raise ToolError(
                 f"No replacement was performed. Multiple occurrences of old_str `{old_str}` in lines {lines}. Please ensure it is unique"
             )
@@ -291,9 +270,7 @@ Notes for using the `str_replace` command:
 
         # Prepare the success message
         success_msg = f"The file {path} has been edited. "
-        success_msg += self._make_output(
-            snippet, f"a snippet of {path}", start_line + 1
-        )
+        success_msg += self._make_output(snippet, f"a snippet of {path}", start_line + 1)
         success_msg += "Review the changes and make sure they are as expected. Edit the file again if necessary."
 
         return ToolExecResult(
@@ -314,9 +291,7 @@ Notes for using the `str_replace` command:
 
         new_str_lines = new_str.split("\n")
         new_file_text_lines = (
-            file_text_lines[:insert_line]
-            + new_str_lines
-            + file_text_lines[insert_line:]
+            file_text_lines[:insert_line] + new_str_lines + file_text_lines[insert_line:]
         )
         snippet_lines = (
             file_text_lines[max(0, insert_line - SNIPPET_LINES) : insert_line]
@@ -368,13 +343,8 @@ Notes for using the `str_replace` command:
         if expand_tabs:
             file_content = file_content.expandtabs()
         file_content = "\n".join(
-            [
-                f"{i + init_line:6}\t{line}"
-                for i, line in enumerate(file_content.split("\n"))
-            ]
+            [f"{i + init_line:6}\t{line}" for i, line in enumerate(file_content.split("\n"))]
         )
         return (
-            f"Here's the result of running `cat -n` on {file_descriptor}:\n"
-            + file_content
-            + "\n"
+            f"Here's the result of running `cat -n` on {file_descriptor}:\n" + file_content + "\n"
         )

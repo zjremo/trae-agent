@@ -9,10 +9,12 @@ dependencies = [
     "anthropic>=0.54.0",
     "click>=8.0.0",
     "google-genai>=1.24.0",
+    "jsonpath-ng>=1.7.0",
     "pydantic>=2.0.0",
     "python-dotenv>=1.0.0",
     "rich>=13.0.0",
-    "typing-extensions>=4.0.0"
+    "typing-extensions>=4.0.0",
+    "ollama>=0.5.1",
 ]
 
 [project.optional-dependencies]
@@ -68,6 +70,10 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
+
+
+[tool.ruff]
+line-length = 100
 
 [tool.ruff.lint]
 select = [

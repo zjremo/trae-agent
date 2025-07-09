@@ -5,6 +5,7 @@
   "model_providers": {
     "openai": {
       "api_key": "your_openai_api_key",
+      "base_url": "https://api.openai.com/v1",
       "model": "gpt-4o",
       "max_tokens": 128000,
       "temperature": 0.5,
@@ -13,6 +14,7 @@
     },
     "anthropic": {
       "api_key": "your_anthropic_api_key",
+      "base_url": "https://api.anthropic.com",
       "model": "claude-sonnet-4-20250514",
       "max_tokens": 4096,
       "temperature": 0.5,
@@ -42,7 +44,7 @@
     },
     "ollama": {
       "api_key": "ollama",
-      "base_url": "http://localhost:11434",
+      "base_url": "http://localhost:11434/v1",
       "model": "model_name",
       "max_tokens": 4096,
       "temperature": 0.5,
@@ -52,6 +54,7 @@
     },
     "openrouter": {
       "api_key": "your_openrouter_api_key",
+      "base_url": "https://openrouter.ai/api/v1",
       "model": "openai/gpt-4o",
       "max_tokens": 4096,
       "temperature": 0.5,

@@ -40,9 +40,7 @@ class CLIConsole:
         self.config: Config | None = config
         self.console_steps: dict[int, ConsoleStep] = {}
         self.lakeview_config: LakeviewConfig | None = (
-            config.lakeview_config
-            if config is not None and config.enable_lakeview
-            else None
+            config.lakeview_config if config is not None and config.enable_lakeview else None
         )
         self.lake_view: LakeView | None = (
             LakeView(config) if config is not None and config.enable_lakeview else None
@@ -71,10 +69,7 @@ class CLIConsole:
                 self.lake_view is None
                 or (
                     len(self.agent_execution.steps) == len(self.console_steps)
-                    and all(
-                        step.lake_view_generator_done
-                        for step in self.console_steps.values()
-                    )
+                    and all(step.lake_view_generator_done for step in self.console_steps.values())
                 )
             ):
                 break
@@ -152,9 +147,7 @@ class CLIConsole:
             width=80,
         )
 
-    async def _create_lakeview_step_display(
-        self, agent_step: AgentStep
-    ) -> Panel | None:
+    async def _create_lakeview_step_display(self, agent_step: AgentStep) -> Panel | None:
         if self.lake_view is None:
             return None
 
@@ -180,9 +173,7 @@ class CLIConsole:
 
         # Build progressive step content
         step_content: list[str] = []
-        step_content.append(
-            f"[{color}]{emoji} State: {agent_step.state.value.title()}[/{color}]"
-        )
+        step_content.append(f"[{color}]{emoji} State: {agent_step.state.value.title()}[/{color}]")
 
         # Show LLM response if available (truncated for readability)
         if agent_step.llm_response and agent_step.llm_response.content:
@@ -202,11 +193,7 @@ class CLIConsole:
         if agent_step.tool_calls and agent_step.tool_results:
             step_content.append("\n[bold]📋 Tool Results:[/bold]")
             for i, result in enumerate(agent_step.tool_results):
-                status = (
-                    "[green]✅ Success[/green]"
-                    if result.success
-                    else "[red]❌ Failed[/red]"
-                )
+                status = "[green]✅ Success[/green]" if result.success else "[red]❌ Failed[/red]"
                 step_content.append(f"  {i + 1}. {status}")
                 if result.error:
                     step_content.append(f"     [red]Error:[/red] {result.error}")
@@ -215,9 +202,7 @@ class CLIConsole:
 
         # Show reflection
         if agent_step.reflection:
-            step_content.append(
-                f"\n[bold]💭 Reflection:[/bold]\n{agent_step.reflection}"
-            )
+            step_content.append(f"\n[bold]💭 Reflection:[/bold]\n{agent_step.reflection}")
 
         # Show error
         if agent_step.error:
@@ -234,15 +219,9 @@ class CLIConsole:
         panels: list[Panel] = []
         if self.agent_execution is None:
             previous_steps = (
-                self.agent_step_history[:-1]
-                if len(self.agent_step_history) >= 2
-                else []
+                self.agent_step_history[:-1] if len(self.agent_step_history) >= 2 else []
             )
-            current_step = (
-                self.agent_step_history[-1]
-                if len(self.agent_step_history) > 0
-                else None
-            )
+            current_step = self.agent_step_history[-1] if len(self.agent_step_history) > 0 else None
         else:
             previous_steps = self.agent_step_history
             current_step = None
@@ -257,9 +236,7 @@ class CLIConsole:
                         )
                     else:
                         lake_view_panel_generator = None
-                    self.console_steps[step_id] = ConsoleStep(
-                        panel, lake_view_panel_generator
-                    )
+                    self.console_steps[step_id] = ConsoleStep(panel, lake_view_panel_generator)
                     panels.append(panel)
                 else:
                     console_step = self.console_steps[step_id]
@@ -320,8 +297,7 @@ class CLIConsole:
 
         if execution.total_tokens:
             total_tokens = (
-                execution.total_tokens.input_tokens
-                + execution.total_tokens.output_tokens
+                execution.total_tokens.input_tokens + execution.total_tokens.output_tokens
             )
             table.add_row("Total Tokens", str(total_tokens))
             table.add_row("Input Tokens", str(execution.total_tokens.input_tokens))
