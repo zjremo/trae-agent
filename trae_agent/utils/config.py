@@ -63,9 +63,7 @@ class Config:
                     with open(config_path, "r") as f:
                         self._config = json.load(f)
                 except Exception as e:
-                    print(
-                        f"Warning: Could not load config file {config_or_config_file}: {e}"
-                    )
+                    print(f"Warning: Could not load config file {config_or_config_file}: {e}")
                     self._config = {}
             else:
                 self._config = {}
@@ -80,6 +78,7 @@ class Config:
                 "anthropic": ModelParameters(
                     model="claude-sonnet-4-20250514",
                     api_key="",
+                    base_url="https://api.anthropic.com",
                     max_tokens=4096,
                     temperature=0.5,
                     top_p=1,
@@ -90,31 +89,27 @@ class Config:
             }
         else:
             for provider in self._config.get("model_providers", {}):
-                provider_config: dict[str, Any] = self._config.get(
-                    "model_providers", {}
-                ).get(provider, {})
+                provider_config: dict[str, Any] = self._config.get("model_providers", {}).get(
+                    provider, {}
+                )
 
                 candidate_count = provider_config.get("candidate_count")
                 self.model_providers[provider] = ModelParameters(
                     model=str(provider_config.get("model", "")),
                     api_key=str(provider_config.get("api_key", "")),
+                    base_url=str(provider_config.get("base_url"))
+                    if "base_url" in provider_config
+                    else None,
                     max_tokens=int(provider_config.get("max_tokens", 1000)),
                     temperature=float(provider_config.get("temperature", 0.5)),
                     top_p=float(provider_config.get("top_p", 1)),
                     top_k=int(provider_config.get("top_k", 0)),
                     max_retries=int(provider_config.get("max_retries", 10)),
-                    parallel_tool_calls=bool(
-                        provider_config.get("parallel_tool_calls", False)
-                    ),
-                    base_url=str(provider_config.get("base_url"))
-                    if "base_url" in provider_config
-                    else None,
+                    parallel_tool_calls=bool(provider_config.get("parallel_tool_calls", False)),
                     api_version=str(provider_config.get("api_version"))
                     if "api_version" in provider_config
                     else None,
-                    candidate_count=int(candidate_count)
-                    if candidate_count is not None
-                    else None,
+                    candidate_count=int(candidate_count) if candidate_count is not None else None,
                     stop_sequences=provider_config.get("stop_sequences")
                     if "stop_sequences" in provider_config
                     else None,
@@ -123,9 +118,7 @@ class Config:
         if "lakeview_config" in self._config:
             self.lakeview_config = LakeviewConfig(
                 model_provider=str(
-                    self._config.get("lakeview_config", {}).get(
-                        "model_provider", "anthropic"
-                    )
+                    self._config.get("lakeview_config", {}).get("model_provider", "anthropic")
                 ),
                 model_name=str(
                     self._config.get("lakeview_config", {}).get(

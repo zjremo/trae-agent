@@ -2,14 +2,16 @@
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
  ![Alpha]( https://img.shields.io/badge/Status-Alpha-red)
+ [![Pre-commit](https://github.com/bytedance/trae-agent/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/bytedance/trae-agent/actions/workflows/pre-commit.yml)
+ [![Unit Tests](https://github.com/bytedance/trae-agent/actions/workflows/unit-test.yml/badge.svg)](https://github.com/bytedance/trae-agent/actions/workflows/unit-test.yml)
 
-*Please note that this project is still in the alpha stage and being actively developed. We welcome various contributions from the community.*
 
 **Trae Agent** is an LLM-based agent for general purpose software engineering tasks. It provides a powerful CLI interface that can understand natural language instructions and execute complex software engineering workflows using various tools and LLM providers.
 
-**Difference with Other CLI Agents:** Trae Agent offers a transparent, modular architecture that researchers and developers can easily modify, extend, and analyze. The open-source nature allows for deep customization of agent behaviors, tool implementations, and workflow patterns, making it an ideal platform for **studying AI agent architectures, conducting ablation studies, and developing novel agent capabilities**. This ***research-friendly design*** enables the academic and open-source communities to contribute to and build upon the foundational agent framework, fostering innovation in the rapidly evolving field of AI agents.
+**Project Status:** The project is still being actively developed. Please refer to [docs/roadmap.md](docs/roadmap.md) and [CONTRIBUTING](CONTRIBUTING.md) if you are willing to help us improve Trae Agent.
 
-**Project Status:** Trae Agent is currently an experimental project. We are working hard on supporting more LLM providers, enriched command-line interface, developing more tools and adding MCP supports. Building a robust unit testing framework for Trae Agent is also our priority.
+**Difference with Other CLI Agents:** Trae Agent offers a transparent, modular architecture that researchers and developers can easily modify, extend, and analyze, making it an ideal platform for **studying AI agent architectures, conducting ablation studies, and developing novel agent capabilities**. This ***research-friendly design*** enables the academic and open-source communities to contribute to and build upon the foundational agent framework, fostering innovation in the rapidly evolving field of AI agents.
+
 
 ## ✨ Features
 
@@ -25,12 +27,12 @@
 
 ### Installation
 
-We strongly recommend using [UV](https://docs.astral.sh/uv/) to setup the project.
+We strongly recommend using [uv](https://docs.astral.sh/uv/) to setup the project.
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/bytedance/trae-agent.git
 cd trae-agent
-uv sync
+make install
 ```
 
 ### Setup API Keys
@@ -56,7 +58,12 @@ export OPENROUTER_API_KEY="your-openrouter-api-key"
 # Optional: For OpenRouter rankings
 export OPENROUTER_SITE_URL="https://your-site.com"
 export OPENROUTER_SITE_NAME="Your App Name"
+
+# Optional: If you want to use a specific openai compatible api provider, you can set the base url here
+export OPENAI_BASE_URL="your-openai-compatible-api-base-url"
 ```
+
+Although you can pass your API key directly using the `api_key` argument, we suggest utilizing [python-dotenv](https://pypi.org/project/python-dotenv/) to add `MODEL_API_KEY="My API Key"` to your `.env` file. This approach helps prevent your API key from being exposed in source control.
 
 ### Basic Usage
 
@@ -151,6 +158,15 @@ Trae Agent uses a JSON configuration file (`trae_config.json`) for settings:
       "top_k": 0,
       "max_retries": 10
     },
+    "google": {
+      "api_key": "your_google_api_key",
+      "model": "gemini-2.5-pro",
+      "max_tokens": 128000,
+      "temperature": 0.5,
+      "top_p": 1,
+      "top_k": 0,
+      "max_retries": 10
+    },
     "azure": {
       "api_key": "you_azure_api_key",
       "base_url": "your_azure_base_url",
@@ -187,6 +203,11 @@ Trae Agent uses a JSON configuration file (`trae_config.json`) for settings:
   }
 }
 ```
+**WARNING:**
+For Doubao users, please use the following base_url.
+```
+base_url=https://ark.cn-beijing.volces.com/api/v3/
+```
 
 **Configuration Priority:**
 
@@ -221,6 +242,7 @@ trae-cli run "Comment this code" --provider ollama --model "qwen3"
 
 - `OPENAI_API_KEY` - OpenAI API key
 - `ANTHROPIC_API_KEY` - Anthropic API key
+- `GOOGLE_API_KEY` - Google API key
 - `OPENROUTER_API_KEY` - OpenRouter API key
 - `OPENROUTER_SITE_URL` - (Optional) Your site URL for OpenRouter rankings
 - `OPENROUTER_SITE_NAME` - (Optional) Your site name for OpenRouter rankings
@@ -269,12 +291,14 @@ Trajectory files contain:
 - **Tool Usage**: Which tools were called and their results
 - **Metadata**: Timestamps, token usage, and execution metrics
 
-For more details, see [TRAJECTORY_RECORDING.md](TRAJECTORY_RECORDING.md).
+For more details, see [docs/TRAJECTORY_RECORDING.md](docs/TRAJECTORY_RECORDING.md).
 
 ## 🤝 Contributing
 
+For detailed contribution guidelines, please refer to [CONTRIBUTING.md](CONTRIBUTING.md).
+
 1. Fork the repository
-2. Set up a development install(`uv sync --all-extras && pre-commit install`)
+2. Set up a development install(`make install-dev pre-commit-install`)
 3. Create a feature branch (`git checkout -b feature/amazing-feature`)
 4. Make your changes
 5. Add tests for new functionality
@@ -315,6 +339,7 @@ PYTHONPATH=. trae-cli run "your task"
 # Verify your API keys are set
 echo $OPENAI_API_KEY
 echo $ANTHROPIC_API_KEY
+echo $GOOGLE_API_KEY
 echo $OPENROUTER_API_KEY
 
 # Check configuration

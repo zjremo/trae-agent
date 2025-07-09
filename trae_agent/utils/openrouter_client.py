@@ -46,9 +46,7 @@ class OpenRouterClient(BaseLLMClient):
             )
 
         # Use OpenAI SDK with OpenRouter's base URL
-        self.client: openai.OpenAI = openai.OpenAI(
-            api_key=self.api_key, base_url="https://openrouter.ai/api/v1"
-        )
+        self.client: openai.OpenAI = openai.OpenAI(api_key=self.api_key, base_url=self.base_url)
         self.message_history: list[ChatCompletionMessageParam] = []
 
     @override
@@ -173,9 +171,7 @@ class OpenRouterClient(BaseLLMClient):
             )
         elif llm_response.content:
             self.message_history.append(
-                ChatCompletionAssistantMessageParam(
-                    content=llm_response.content, role="assistant"
-                )
+                ChatCompletionAssistantMessageParam(content=llm_response.content, role="assistant")
             )
 
         if self.trajectory_recorder:
@@ -204,14 +200,9 @@ class OpenRouterClient(BaseLLMClient):
             "llama-3",
             "command-r",
         ]
-        return any(
-            pattern in model_parameters.model.lower()
-            for pattern in tool_capable_patterns
-        )
+        return any(pattern in model_parameters.model.lower() for pattern in tool_capable_patterns)
 
-    def parse_messages(
-        self, messages: list[LLMMessage]
-    ) -> list[ChatCompletionMessageParam]:
+    def parse_messages(self, messages: list[LLMMessage]) -> list[ChatCompletionMessageParam]:
         openrouter_messages: list[ChatCompletionMessageParam] = []
         for msg in messages:
             if msg.tool_call:
@@ -259,9 +250,7 @@ class OpenRouterClient(BaseLLMClient):
                 if not msg.content:
                     raise ValueError("Assistant message content is required")
                 openrouter_messages.append(
-                    ChatCompletionAssistantMessageParam(
-                        content=msg.content, role="assistant"
-                    )
+                    ChatCompletionAssistantMessageParam(content=msg.content, role="assistant")
                 )
             else:
                 raise ValueError(f"Invalid message role: {msg.role}")
