@@ -155,6 +155,15 @@ Trae Agent uses a JSON configuration file (`trae_config.json`) for settings:
       "top_k": 0,
       "max_retries": 10
     },
+    "google": {
+      "api_key": "your_google_api_key",
+      "model": "gemini-2.5-pro",
+      "max_tokens": 128000,
+      "temperature": 0.5,
+      "top_p": 1,
+      "top_k": 0,
+      "max_retries": 10
+    },
     "azure": {
       "api_key": "you_azure_api_key",
       "base_url": "your_azure_base_url",
@@ -228,6 +237,7 @@ trae-cli run "Comment this code" --provider ollama --model "qwen3"
 
 - `OPENAI_API_KEY` - OpenAI API key
 - `ANTHROPIC_API_KEY` - Anthropic API key
+- `GOOGLE_API_KEY` - Google API key
 - `OPENROUTER_API_KEY` - OpenRouter API key
 - `OPENROUTER_SITE_URL` - (Optional) Your site URL for OpenRouter rankings
 - `OPENROUTER_SITE_NAME` - (Optional) Your site name for OpenRouter rankings
@@ -319,6 +329,7 @@ PYTHONPATH=. trae-cli run "your task"
 # Verify your API keys are set
 echo $OPENAI_API_KEY
 echo $ANTHROPIC_API_KEY
+echo $GOOGLE_API_KEY
 echo $OPENROUTER_API_KEY
 
 # Check configuration
