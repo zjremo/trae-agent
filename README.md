@@ -61,6 +61,8 @@ export OPENROUTER_SITE_NAME="Your App Name"
 export OPENAI_BASE_URL="your-openai-compatible-api-base-url"
 ```
 
+Although you can pass your API key directly using the `api_key` argument, we suggest utilizing [python-dotenv](https://pypi.org/project/python-dotenv/) to add `MODEL_API_KEY="My API Key"` to your `.env` file. This approach helps prevent your API key from being exposed in source control.
+
 ### Basic Usage
 
 ```bash
@@ -189,6 +191,11 @@ Trae Agent uses a JSON configuration file (`trae_config.json`) for settings:
   }
 }
 ```
+**WARNING:**
+For Doubao users, please use the following base_url.
+```
+base_url=https://ark.cn-beijing.volces.com/api/v3/
+```
 
 **Configuration Priority:**
 1. Command-line arguments (highest)
@@ -273,9 +280,10 @@ For more details, see [TRAJECTORY_RECORDING.md](TRAJECTORY_RECORDING.md).
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Add tests for new functionality
+2. Set up a development install(`uv sync --all-extras && pre-commit install`)
+3. Create a feature branch (`git checkout -b feature/amazing-feature`)
+4. Make your changes
+5. Add tests for new functionality
 6. Commit your changes (`git commit -m 'Add amazing feature'`)
 7. Push to the branch (`git push origin feature/amazing-feature`)
 8. Open a Pull Request
