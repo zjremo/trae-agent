@@ -124,6 +124,7 @@ trae-cli interactive --provider openai --model gpt-4o --max-steps 30
 ```
 
 In interactive mode, you can:
+
 - Type any task description to execute it
 - Use `status` to see agent information
 - Use `help` for available commands
@@ -228,6 +229,7 @@ base_url=https://ark.cn-beijing.volces.com/api/v3/
 ```
 
 **Configuration Priority:**
+
 1. Command-line arguments (highest)
 2. Configuration file values
 3. Environment variables
@@ -251,6 +253,7 @@ trae-cli run "Comment this code" --provider ollama --model "qwen3"
 ```
 
 **Popular OpenRouter Models:**
+
 - `openai/gpt-4o` - Latest GPT-4 model
 - `anthropic/claude-3-5-sonnet` - Excellent for coding tasks
 - `google/gemini-pro` - Strong reasoning capabilities
@@ -311,6 +314,7 @@ trae-cli run "Optimize the database queries" --trajectory-file optimization_debu
 ```
 
 Trajectory files contain:
+
 - **LLM Interactions**: All messages, responses, and tool calls
 - **Agent Steps**: State transitions and decision points
 - **Tool Usage**: Which tools were called and their results
@@ -353,12 +357,14 @@ For detailed contribution guidelines, please refer to [CONTRIBUTING.md](CONTRIBU
 ### Common Issues
 
 **Import Errors:**
+
 ```bash
 # Try setting PYTHONPATH
 PYTHONPATH=. trae-cli run "your task"
 ```
 
 **API Key Issues:**
+
 ```bash
 # Verify your API keys are set
 echo $OPENAI_API_KEY
@@ -372,6 +378,7 @@ trae-cli show-config
 ```
 
 **Permission Errors:**
+
 ```bash
 # Ensure proper permissions for file operations
 chmod +x /path/to/your/project
