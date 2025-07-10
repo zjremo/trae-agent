@@ -272,33 +272,9 @@ trae-cli run "Comment this code" --provider ollama --model "qwen3"
 
 ## 🛠️ Available Tools
 
-Trae Agent comes with several built-in tools:
+Trae Agent provides a comprehensive toolkit for file editing, bash execution, structured thinking, task completion, and JSON manipulation, with new tools actively being developed and existing ones continuously enhanced.
 
-- **str_replace_based_edit_tool**: Create, edit, view, and manipulate files
-  - `view` - Display file contents or directory listings
-  - `create` - Create new files
-  - `str_replace` - Replace text in files
-  - `insert` - Insert text at specific lines
-
-- **bash**: Execute shell commands and scripts
-  - Run commands with persistent state
-  - Handle long-running processes
-  - Capture output and errors
-
-- **sequential_thinking**: Structured problem-solving and analysis
-  - Break down complex problems
-  - Iterative thinking with revision capabilities
-  - Hypothesis generation and verification
-
-- **task_done**: Signal task completion
-  - Mark tasks as successfully completed
-  - Provide final results and summaries
-
-- **json_edit_tool**: Edit and manipulate JSON files
-  - `view` - Display the entire JSON file or content at specific JSONPaths
-  - `set` - Update existing values at specified JSONPaths
-  - `add` - Add new key-value pairs to objects or append elements to arrays at a given JSONPath
-  - `remove` - Delete elements at specified JSONPaths
+For detailed information about all available tools and their capabilities, see [docs/tools.md](docs/tools.md).
 
 ## 📊 Trajectory Recording
 
