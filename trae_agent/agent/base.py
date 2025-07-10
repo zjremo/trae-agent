@@ -18,30 +18,74 @@ class Agent(ABC):
     """Base class for LLM-based agents."""
 
     def __init__(self, config: Config):
-        self.llm_client: LLMClient = LLMClient(
+        self._llm_client: LLMClient = LLMClient(
             config.default_provider, config.model_providers[config.default_provider]
         )
-        self.max_steps: int = config.max_steps
-        self.model_parameters: ModelParameters = config.model_providers[config.default_provider]
-        self.initial_messages: list[LLMMessage] = []
-        self.task: str = ""
-        self.tools: list[Tool] = []
-        self.tool_caller: ToolExecutor = ToolExecutor([])
+        self._max_steps: int = config.max_steps
+        self._model_parameters: ModelParameters = config.model_providers[config.default_provider]
+        self._initial_messages: list[LLMMessage] = []
+        self._task: str = ""
+        self._tools: list[Tool] = []
+        self._tool_caller: ToolExecutor = ToolExecutor([])
 
-        self.cli_console: CLIConsole | None = None
+        self._cli_console: CLIConsole | None = None
 
         # Trajectory recorder
-        self.trajectory_recorder: TrajectoryRecorder | None = None
+        self._trajectory_recorder: TrajectoryRecorder | None = None
 
-    def set_trajectory_recorder(self, recorder: TrajectoryRecorder | None) -> None:
+    @property
+    def llm_client(self) -> LLMClient:
+        return self._llm_client
+
+    @property
+    def trajectory_recorder(self) -> TrajectoryRecorder | None:
+        """Get the trajectory recorder for this agent."""
+        return self._trajectory_recorder
+
+    def _set_trajectory_recorder(self, recorder: TrajectoryRecorder | None) -> None:
         """Set the trajectory recorder for this agent."""
-        self.trajectory_recorder = recorder
+        self._trajectory_recorder = recorder
         # Also set it on the LLM client
-        self.llm_client.set_trajectory_recorder(recorder)
+        self._llm_client.set_trajectory_recorder(recorder)
+
+    @property
+    def cli_console(self) -> CLIConsole | None:
+        """Get the CLI console for this agent."""
+        return self._cli_console
 
     def set_cli_console(self, cli_console: CLIConsole | None) -> None:
         """Set the CLI console for this agent."""
-        self.cli_console = cli_console
+        self._cli_console = cli_console
+
+    @property
+    def tools(self) -> list[Tool]:
+        """Get the tools available to this agent."""
+        return self._tools
+
+    @property
+    def task(self) -> str:
+        """Get the current task of the agent."""
+        return self._task
+
+    @task.setter
+    def task(self, value: str):
+        """Set the current task of the agent."""
+        self._task = value
+
+    @property
+    def initial_messages(self) -> list[LLMMessage]:
+        """Get the initial messages for the agent."""
+        return self._initial_messages
+
+    @property
+    def model_parameters(self) -> ModelParameters:
+        """Get the model parameters for the agent."""
+        return self._model_parameters
+
+    @property
+    def max_steps(self) -> int:
+        """Get the maximum number of steps for the agent."""
+        return self._max_steps
 
     @abstractmethod
     def new_task(
@@ -59,13 +103,13 @@ class Agent(ABC):
 
         start_time = time.time()
 
-        execution = AgentExecution(task=self.task, steps=[])
+        execution = AgentExecution(task=self._task, steps=[])
 
         try:
-            messages = self.initial_messages
+            messages = self._initial_messages
             step_number = 1
 
-            while step_number <= self.max_steps:
+            while step_number <= self._max_steps:
                 step = AgentStep(step_number=step_number, state=AgentState.THINKING)
 
                 try:
@@ -73,15 +117,17 @@ class Agent(ABC):
                     step.state = AgentState.THINKING
 
                     # Display thinking state
-                    if self.cli_console:
-                        self.cli_console.update_status(step)
+                    if self._cli_console:
+                        self._cli_console.update_status(step)
 
-                    llm_response = self.llm_client.chat(messages, self.model_parameters, self.tools)
+                    llm_response = self._llm_client.chat(
+                        messages, self._model_parameters, self._tools
+                    )
                     step.llm_response = llm_response
 
                     # Display step with LLM response
-                    if self.cli_console:
-                        self.cli_console.update_status(step)
+                    if self._cli_console:
+                        self._cli_console.update_status(step)
 
                     # Update token usage
                     if llm_response.usage:
@@ -97,8 +143,8 @@ class Agent(ABC):
                             execution.success = True
 
                             # Record agent step
-                            if self.trajectory_recorder:
-                                self.trajectory_recorder.record_agent_step(
+                            if self._trajectory_recorder:
+                                self._trajectory_recorder.record_agent_step(
                                     step_number=step.step_number,
                                     state=step.state.value,
                                     llm_messages=messages,
@@ -108,8 +154,8 @@ class Agent(ABC):
                                     reflection=step.reflection,
                                     error=step.error,
                                 )
-                            if self.cli_console:
-                                self.cli_console.update_status(step)
+                            if self._cli_console:
+                                self._cli_console.update_status(step)
                             execution.steps.append(step)
                             break
                         else:
@@ -127,20 +173,22 @@ class Agent(ABC):
                             step.tool_calls = tool_calls
 
                             # Display tool calling state with tool calls
-                            if self.cli_console:
-                                self.cli_console.update_status(step)
+                            if self._cli_console:
+                                self._cli_console.update_status(step)
 
-                            if self.model_parameters.parallel_tool_calls:
-                                tool_results = await self.tool_caller.parallel_tool_call(tool_calls)
+                            if self._model_parameters.parallel_tool_calls:
+                                tool_results = await self._tool_caller.parallel_tool_call(
+                                    tool_calls
+                                )
                             else:
-                                tool_results = await self.tool_caller.sequential_tool_call(
+                                tool_results = await self._tool_caller.sequential_tool_call(
                                     tool_calls
                                 )
                             step.tool_results = tool_results
 
                             # Display tool results
-                            if self.cli_console:
-                                self.cli_console.update_status(step)
+                            if self._cli_console:
+                                self._cli_console.update_status(step)
 
                             messages = []
                             for tool_result in tool_results:
@@ -154,8 +202,8 @@ class Agent(ABC):
                                 step.reflection = reflection
 
                                 # Display reflection
-                                if self.cli_console:
-                                    self.cli_console.update_status(step)
+                                if self._cli_console:
+                                    self._cli_console.update_status(step)
 
                                 messages.append(LLMMessage(role="assistant", content=reflection))
                         else:
@@ -167,8 +215,8 @@ class Agent(ABC):
                             ]
 
                     # Record agent step
-                    if self.trajectory_recorder:
-                        self.trajectory_recorder.record_agent_step(
+                    if self._trajectory_recorder:
+                        self._trajectory_recorder.record_agent_step(
                             step_number=step.step_number,
                             state=step.state.value,
                             llm_messages=messages,
@@ -178,8 +226,8 @@ class Agent(ABC):
                             reflection=step.reflection,
                             error=step.error,
                         )
-                    if self.cli_console:
-                        self.cli_console.update_status(step)
+                    if self._cli_console:
+                        self._cli_console.update_status(step)
                     execution.steps.append(step)
                     step_number += 1
 
@@ -188,12 +236,12 @@ class Agent(ABC):
                     step.error = str(e)
 
                     # Display error
-                    if self.cli_console:
-                        self.cli_console.update_status(step)
+                    if self._cli_console:
+                        self._cli_console.update_status(step)
 
                     # Record agent step
-                    if self.trajectory_recorder:
-                        self.trajectory_recorder.record_agent_step(
+                    if self._trajectory_recorder:
+                        self._trajectory_recorder.record_agent_step(
                             step_number=step.step_number,
                             state=step.state.value,
                             llm_messages=messages,
@@ -203,12 +251,12 @@ class Agent(ABC):
                             reflection=step.reflection,
                             error=step.error,
                         )
-                    if self.cli_console:
-                        self.cli_console.update_status(step)
+                    if self._cli_console:
+                        self._cli_console.update_status(step)
                     execution.steps.append(step)
                     break
 
-            if step_number > self.max_steps and not execution.success:
+            if step_number > self._max_steps and not execution.success:
                 execution.final_result = "Task execution exceeded maximum steps without completion."
 
         except Exception as e:
@@ -217,8 +265,8 @@ class Agent(ABC):
         execution.execution_time = time.time() - start_time
 
         # Display final summary
-        if self.cli_console:
-            self.cli_console.update_status(agent_execution=execution)
+        if self._cli_console:
+            self._cli_console.update_status(agent_execution=execution)
 
         return execution
 
