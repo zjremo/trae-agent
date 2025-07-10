@@ -22,9 +22,7 @@ class Agent(ABC):
             config.default_provider, config.model_providers[config.default_provider]
         )
         self._max_steps: int = config.max_steps
-        self._model_parameters: ModelParameters = config.model_providers[
-            config.default_provider
-        ]
+        self._model_parameters: ModelParameters = config.model_providers[config.default_provider]
         self._initial_messages: list[LLMMessage] = []
         self._task: str = ""
         self._tools: list[Tool] = []
@@ -122,7 +120,9 @@ class Agent(ABC):
                     if self._cli_console:
                         self._cli_console.update_status(step)
 
-                    llm_response = self._llm_client.chat(messages, self._model_parameters, self._tools)
+                    llm_response = self._llm_client.chat(
+                        messages, self._model_parameters, self._tools
+                    )
                     step.llm_response = llm_response
 
                     # Display step with LLM response
@@ -161,9 +161,7 @@ class Agent(ABC):
                         else:
                             step.state = AgentState.THINKING
                             messages = [
-                                LLMMessage(
-                                    role="user", content=self.task_incomplete_message()
-                                )
+                                LLMMessage(role="user", content=self.task_incomplete_message())
                             ]
                     else:
                         # Check if the response contains a tool call
@@ -179,9 +177,13 @@ class Agent(ABC):
                                 self._cli_console.update_status(step)
 
                             if self._model_parameters.parallel_tool_calls:
-                                tool_results = await self._tool_caller.parallel_tool_call(tool_calls)
+                                tool_results = await self._tool_caller.parallel_tool_call(
+                                    tool_calls
+                                )
                             else:
-                                tool_results = await self._tool_caller.sequential_tool_call(tool_calls)
+                                tool_results = await self._tool_caller.sequential_tool_call(
+                                    tool_calls
+                                )
                             step.tool_results = tool_results
 
                             # Display tool results

@@ -66,8 +66,7 @@ class TraeAgent(Agent):
         # Get the model provider from the LLM client
         provider = self._llm_client.provider.value
         self._tools: list[Tool] = [
-            tools_registry[tool_name](model_provider=provider)
-            for tool_name in tool_names
+            tools_registry[tool_name](model_provider=provider) for tool_name in tool_names
         ]
         self._tool_caller: ToolExecutor = ToolExecutor(self._tools)
 
@@ -104,11 +103,7 @@ class TraeAgent(Agent):
     @override
     async def execute_task(self) -> AgentExecution:
         """Execute the task and finalize trajectory recording."""
-        console_task = (
-            asyncio.create_task(self._cli_console.start())
-            if self._cli_console
-            else None
-        )
+        console_task = asyncio.create_task(self._cli_console.start()) if self._cli_console else None
         execution = await super().execute_task()
         if self._cli_console and console_task and not console_task.done():
             await console_task
