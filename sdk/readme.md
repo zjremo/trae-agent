@@ -4,7 +4,7 @@
 The Python SDK is located in the sdk/python directory and provides a run function. Here is an example of how to use it:
 
 ```py
-from sdk.python import run 
+from sdk.python import run
 
 result = run(
     task="Fix the bug in the authentication module",
