@@ -11,6 +11,7 @@ T = TypeVar("T")
 
 def retry_with(
     func: Callable[..., T],
+    service_name: str = "OpenAI",
     max_retries: int = 3,
     provider_name: str = "unknown",
 ) -> Callable[..., T]:
@@ -19,6 +20,7 @@ def retry_with(
 
     Args:
         func: The function to decorate
+        provider_name: The name of the service being called
         max_retries: Maximum number of retry attempts
 
     Returns:
