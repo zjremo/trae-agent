@@ -29,7 +29,9 @@ TraeAgentToolNames = [
 class TraeAgent(Agent):
     """Trae Agent specialized for software engineering tasks."""
 
-    def __init__(self, config: Config | None = None, llm_client: LLMClient | None = None):
+    def __init__(self,
+                 config: Config | None = None,
+                 llm_client: LLMClient | None = None):
         """Initialize TraeAgent.
 
         Args:
@@ -60,7 +62,8 @@ class TraeAgent(Agent):
         """
         return cls(config=config)
 
-    def setup_trajectory_recording(self, trajectory_path: str | None = None) -> str:
+    def setup_trajectory_recording(self,
+                                   trajectory_path: str | None = None) -> str:
         """Set up trajectory recording for this agent.
 
         Args:
@@ -87,21 +90,26 @@ class TraeAgent(Agent):
         self._task: str = task
 
         if tool_names is None:
-            tool_names = TraeAgentToolNames
+            tool_names = TraeAgentToolNames  # 默认可用工具列表
 
         # Get the model provider from the LLM client
         provider = self._llm_client.provider.value
         self._tools: list[Tool] = [
-            tools_registry[tool_name](model_provider=provider) for tool_name in tool_names
+            tools_registry[tool_name](model_provider=provider)
+            for tool_name in tool_names
         ]
-        self._tool_caller: ToolExecutor = ToolExecutor(self._tools)
+        self._tool_caller: ToolExecutor = ToolExecutor(
+            self._tools)  # 导入所有可用工具，生成工具执行器
 
+        # 初始化agent输入消息，系统提示词 + 用户提示词
         self._initial_messages: list[LLMMessage] = []
-        self._initial_messages.append(LLMMessage(role="system", content=self.get_system_prompt()))
+        self._initial_messages.append(
+            LLMMessage(role="system", content=self.get_system_prompt()))
 
         user_message = ""
         if not extra_args:
-            raise AgentError("Project path and issue information are required.")
+            raise AgentError(
+                "Project path and issue information are required.")
         if "project_path" not in extra_args:
             raise AgentError("Project path is required")
 
@@ -115,10 +123,12 @@ class TraeAgent(Agent):
             if attr in extra_args:
                 setattr(self, attr, extra_args[attr])
 
-        self._initial_messages.append(LLMMessage(role="user", content=user_message))
+        self._initial_messages.append(
+            LLMMessage(role="user", content=user_message))
 
         # If trajectory recorder is set, start recording
         if self._trajectory_recorder:
+            # 开始记录轨迹
             self._trajectory_recorder.start_recording(
                 task=task,
                 provider=self._llm_client.provider.value,
@@ -129,7 +139,9 @@ class TraeAgent(Agent):
     @override
     async def execute_task(self) -> AgentExecution:
         """Execute the task and finalize trajectory recording."""
-        console_task = asyncio.create_task(self._cli_console.start()) if self._cli_console else None
+        # console_task负责实时打印进度
+        console_task = asyncio.create_task(
+            self._cli_console.start()) if self._cli_console else None
         execution = await super().execute_task()
         if self._cli_console and console_task and not console_task.done():
             await console_task
@@ -137,8 +149,7 @@ class TraeAgent(Agent):
         # Finalize trajectory recording if recorder is available
         if self._trajectory_recorder:
             self._trajectory_recorder.finalize_recording(
-                success=execution.success, final_result=execution.final_result
-            )
+                success=execution.success, final_result=execution.final_result)
 
         if self.patch_path is not None:
             with open(self.patch_path, "w") as patch_f:
@@ -162,11 +173,12 @@ class TraeAgent(Agent):
         os.chdir(self.project_path)
         try:
             if not self.base_commit:
-                stdout = subprocess.check_output(["git", "--no-pager", "diff"]).decode()
+                stdout = subprocess.check_output(["git", "--no-pager",
+                                                  "diff"]).decode()
             else:
                 stdout = subprocess.check_output(
-                    ["git", "--no-pager", "diff", self.base_commit, "HEAD"]
-                ).decode()
+                    ["git", "--no-pager", "diff", self.base_commit,
+                     "HEAD"]).decode()
         except (subprocess.CalledProcessError, FileNotFoundError):
             stdout = ""
         finally:
@@ -194,8 +206,7 @@ class TraeAgent(Agent):
             if line.startswith("diff --git a/"):
                 target_path = line.split()[-1]
                 is_tests = target_path.startswith("b/") and any(
-                    p in target_path for p in test_patterns
-                )
+                    p in target_path for p in test_patterns)
 
             if not is_tests:
                 filtered_lines.append(line)
@@ -207,7 +218,8 @@ class TraeAgent(Agent):
         """Check if the LLM indicates that the task is completed."""
         if llm_response.tool_calls is None:
             return False
-        return any(tool_call.name == "task_done" for tool_call in llm_response.tool_calls)
+        return any(tool_call.name == "task_done"
+                   for tool_call in llm_response.tool_calls)
 
     @override
     def _is_task_completed(self, llm_response: LLMResponse) -> bool:

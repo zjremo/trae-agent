@@ -22,14 +22,14 @@ class LLMProvider(Enum):
     OPENROUTER = "openrouter"
     DOUBAO = "doubao"
     GOOGLE = "google"
+    QWEN = "qwen"
 
 
 class LLMClient:
     """Main LLM client that supports multiple providers."""
 
-    def __init__(
-        self, provider: str | LLMProvider, model_parameters: ModelParameters, max_steps: int
-    ):
+    def __init__(self, provider: str | LLMProvider,
+                 model_parameters: ModelParameters, max_steps: int):
         if isinstance(provider, str):
             provider = LLMProvider(provider)
 
@@ -38,6 +38,10 @@ class LLMClient:
         self._max_steps: int = max_steps
 
         match provider:
+            case LLMProvider.QWEN:
+                from .qwen_client import QwenClient
+
+                self.client: BaseLLMClient = QwenClient(model_parameters)
             case LLMProvider.OPENAI:
                 from .openai_client import OpenAIClient
 
@@ -77,7 +81,8 @@ class LLMClient:
         """Get the max steps used by this client."""
         return self._max_steps
 
-    def set_trajectory_recorder(self, recorder: TrajectoryRecorder | None) -> None:
+    def set_trajectory_recorder(self,
+                                recorder: TrajectoryRecorder | None) -> None:
         """Set the trajectory recorder for the underlying client."""
         self.client.set_trajectory_recorder(recorder)
 
@@ -93,10 +98,11 @@ class LLMClient:
         reuse_history: bool = True,
     ) -> LLMResponse:
         """Send chat messages to the LLM."""
-        return self.client.chat(messages, model_parameters, tools, reuse_history)
+        return self.client.chat(messages, model_parameters, tools,
+                                reuse_history)
 
     def supports_tool_calling(self, model_parameters: ModelParameters) -> bool:
         """Check if the current client supports tool calling."""
-        return hasattr(self.client, "supports_tool_calling") and self.client.supports_tool_calling(
-            model_parameters
-        )
+        return hasattr(
+            self.client, "supports_tool_calling"
+        ) and self.client.supports_tool_calling(model_parameters)

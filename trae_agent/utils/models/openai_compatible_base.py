@@ -62,13 +62,15 @@ class ProviderConfig(ABC):
         pass
 
 
-class OpenAICompatibleClient(BaseLLMClient):
+class OpenAICompatibleClient(BaseLLMClient):  # OpenAI适配模型商使用
     """Base class for OpenAI-compatible clients with shared logic."""
 
-    def __init__(self, model_parameters: ModelParameters, provider_config: ProviderConfig):
+    def __init__(self, model_parameters: ModelParameters,
+                 provider_config: ProviderConfig):
         super().__init__(model_parameters)
         self.provider_config = provider_config
-        self.client = provider_config.create_client(self.api_key, self.base_url, self.api_version)
+        self.client = provider_config.create_client(
+            self.api_key, self.base_url, self.api_version)  # openai.OpenAI
         self.message_history: list[ChatCompletionMessageParam] = []
 
     @override
@@ -84,15 +86,15 @@ class OpenAICompatibleClient(BaseLLMClient):
     ) -> ChatCompletion:
         """Create a response using the provider's API. This method will be decorated with retry logic."""
         return self.client.chat.completions.create(
-            model=model_parameters.model,
-            messages=self.message_history,
-            tools=tool_schemas if tool_schemas else openai.NOT_GIVEN,
+            model=model_parameters.model,  # 模型名称
+            messages=self.message_history,  # 上下文历史
+            tools=tool_schemas if tool_schemas else openai.NOT_GIVEN,  # 可调用工具
             temperature=model_parameters.temperature,
-            top_p=model_parameters.top_p,
-            max_tokens=model_parameters.max_tokens,
+            top_p=model_parameters.top_p, # top_p=0.1，则考虑概率最高的极少数词汇; top_p=0.9则会从概率占90%的词汇中采样
+            max_tokens=model_parameters.max_tokens, # 输出最大tokens
             extra_headers=extra_headers if extra_headers else None,
             n=1,
-        )
+        ) # 没有指定stream字段的布尔值，采用blocking模式进行输出
 
     @override
     def chat(
@@ -103,9 +105,10 @@ class OpenAICompatibleClient(BaseLLMClient):
         reuse_history: bool = True,
     ) -> LLMResponse:
         """Send chat messages with optional tool support."""
+        # 转换为与大模型交互的消息格式, openai格式兼容
         parsed_messages = self.parse_messages(messages)
-        if reuse_history:
-            self.message_history = self.message_history + parsed_messages
+        if reuse_history:  # 记录之前的输入历史
+            self.message_history = self.message_history + parsed_messages  # list加法
         else:
             self.message_history = parsed_messages
 
@@ -119,8 +122,7 @@ class OpenAICompatibleClient(BaseLLMClient):
                         parameters=tool.get_input_schema(),
                     ),
                     type="function",
-                )
-                for tool in tools
+                ) for tool in tools
             ]
 
         # Get provider-specific extra headers
@@ -128,13 +130,14 @@ class OpenAICompatibleClient(BaseLLMClient):
 
         # Apply retry decorator to the API call
         retry_decorator = retry_with(
-            func=self._create_response,
-            service_name=self.provider_config.get_service_name(),
+            func=self._create_response, # 底层调用openai
+            service_name=self.provider_config.get_service_name(),  # Qwen
             max_retries=model_parameters.max_retries,
         )
-        response = retry_decorator(model_parameters, tool_schemas, extra_headers)
+        response = retry_decorator(model_parameters, tool_schemas,
+                                   extra_headers)
 
-        choice = response.choices[0]
+        choice = response.choices[0] # 拿到response的相关内容，blocking模式
 
         tool_calls: list[ToolCall] | None = None
         if choice.message.tool_calls:
@@ -144,34 +147,26 @@ class OpenAICompatibleClient(BaseLLMClient):
                     ToolCall(
                         name=tool_call.function.name,
                         call_id=tool_call.id,
-                        arguments=(
-                            json.loads(tool_call.function.arguments)
-                            if tool_call.function.arguments
-                            else {}
-                        ),
-                    )
-                )
+                        arguments=(json.loads(tool_call.function.arguments)
+                                   if tool_call.function.arguments else {}),
+                    ))
 
         llm_response = LLMResponse(
             content=choice.message.content or "",
             tool_calls=tool_calls,
             finish_reason=choice.finish_reason,
             model=response.model,
-            usage=(
-                LLMUsage(
-                    input_tokens=response.usage.prompt_tokens or 0,
-                    output_tokens=response.usage.completion_tokens or 0,
-                )
-                if response.usage
-                else None
-            ),
+            usage=(LLMUsage(
+                input_tokens=response.usage.prompt_tokens or 0,
+                output_tokens=response.usage.completion_tokens or 0,
+            ) if response.usage else None), # usage用量
         )
 
         # Update message history
         if llm_response.tool_calls:
             self.message_history.append(
                 ChatCompletionAssistantMessageParam(
-                    role="assistant",
+                    role="assistant", # 模型自己的输出以assistant方式加入到上下文
                     content=llm_response.content,
                     tool_calls=[
                         ChatCompletionMessageToolCallParam(
@@ -181,18 +176,16 @@ class OpenAICompatibleClient(BaseLLMClient):
                                 arguments=json.dumps(tool_call.arguments),
                             ),
                             type="function",
-                        )
-                        for tool_call in llm_response.tool_calls
+                        ) for tool_call in llm_response.tool_calls
                     ],
-                )
-            )
+                ))
         elif llm_response.content:
             self.message_history.append(
-                ChatCompletionAssistantMessageParam(content=llm_response.content, role="assistant")
-            )
+                ChatCompletionAssistantMessageParam(
+                    content=llm_response.content, role="assistant"))
 
         if self.trajectory_recorder:
-            self.trajectory_recorder.record_llm_interaction(
+            self.trajectory_recorder.record_llm_interaction( # 记录一次模型交互
                 messages=messages,
                 response=llm_response,
                 provider=self.provider_config.get_provider_name(),
@@ -205,10 +198,14 @@ class OpenAICompatibleClient(BaseLLMClient):
     @override
     def supports_tool_calling(self, model_parameters: ModelParameters) -> bool:
         """Check if the current model supports tool calling."""
-        return self.provider_config.supports_tool_calling(model_parameters.model)
+        return self.provider_config.supports_tool_calling(
+            model_parameters.model)
 
-    def parse_messages(self, messages: list[LLMMessage]) -> list[ChatCompletionMessageParam]:
+    def parse_messages(
+            self,
+            messages: list[LLMMessage]) -> list[ChatCompletionMessageParam]:
         """Parse LLM messages to OpenAI format."""
+        # 转化消息为与大模型进行交互的信息，补全对话类消息格式
         openai_messages: list[ChatCompletionMessageParam] = []
         for msg in messages:
             match msg:
@@ -223,7 +220,7 @@ class OpenAICompatibleClient(BaseLLMClient):
 
         return openai_messages
 
-
+# 格式化tool_call信息函数
 def _msg_tool_call_handler(messages: list[ChatCompletionMessageParam], msg: LLMMessage) -> None:
     if msg.tool_call:
         messages.append(
@@ -239,13 +236,13 @@ def _msg_tool_call_handler(messages: list[ChatCompletionMessageParam], msg: LLMM
             )
         )
 
-
+# 格式化tool_result信息函数
 def _msg_tool_result_handler(messages: list[ChatCompletionMessageParam], msg: LLMMessage) -> None:
     if msg.tool_result:
         result: str = ""
         if msg.tool_result.result:
             result = result + msg.tool_result.result + "\n"
-        if msg.tool_result.error:
+        if msg.tool_result.error: # 错误信息打印
             result += "Tool call failed with error:\n"
             result += msg.tool_result.error
         result = result.strip()
@@ -257,7 +254,7 @@ def _msg_tool_result_handler(messages: list[ChatCompletionMessageParam], msg: LL
             )
         )
 
-
+# 格式化role信息格式
 def _msg_role_handler(messages: list[ChatCompletionMessageParam], msg: LLMMessage) -> None:
     if msg.role:
         match msg.role:

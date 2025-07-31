@@ -54,7 +54,7 @@ def cli():
     """Trae Agent - LLM-based agent for software engineering tasks."""
     pass
 
-
+# uv run trae-cli run "hello, ..."
 @cli.command()
 @click.argument("task", required=False)
 @click.option("--file", "-f", "file_path", help="Path to a file containing the task description.")
@@ -68,7 +68,7 @@ def cli():
 @click.option("--config-file", help="Path to configuration file", default="trae_config.json")
 @click.option("--trajectory-file", "-t", help="Path to save trajectory file")
 @click.option("--patch-path", "-pp", help="Path to patch file")
-def run(
+def run(# 参数全是命令行传入的参数
     task: str | None,
     file_path: str | None,
     patch_path: str,
@@ -77,7 +77,7 @@ def run(
     model_base_url: str | None = None,
     api_key: str | None = None,
     max_steps: int | None = None,
-    working_dir: str | None = None,
+    working_dir: str | None = None, # 后面其实默认为当前项目根目录
     must_patch: bool = False,
     config_file: str = "trae_config.json",
     trajectory_file: str | None = None,
@@ -110,9 +110,11 @@ def run(
         )
         sys.exit(1)
 
-    config = load_config(config_file, provider, model, model_base_url, api_key, max_steps)
+    # 配置导入
+    config = load_config(config_file, provider, model, model_base_url, api_key,
+                         max_steps)
     # Create agent
-    agent: TraeAgent = create_agent(config)
+    agent: TraeAgent = create_agent(config) # 创建agent
 
     # Set up trajectory recording
     trajectory_path = None
@@ -125,7 +127,8 @@ def run(
     if working_dir:
         try:
             os.chdir(working_dir)
-            console.print(f"[blue]Changed working directory to: {working_dir}[/blue]")
+            console.print(
+                f"[blue]Changed working directory to: {working_dir}[/blue]")
         except Exception as e:
             console.print(f"[red]Error changing directory: {e}[/red]")
             sys.exit(1)
@@ -162,21 +165,25 @@ def run(
         agent.new_task(task, task_args)
         _ = asyncio.run(agent.execute_task())
 
-        console.print(f"\n[green]Trajectory saved to: {trajectory_path}[/green]")
+        console.print(
+            f"\n[green]Trajectory saved to: {trajectory_path}[/green]")
 
     except KeyboardInterrupt:
         console.print("\n[yellow]Task execution interrupted by user[/yellow]")
         if trajectory_path:
-            console.print(f"[blue]Partial trajectory saved to: {trajectory_path}[/blue]")
+            console.print(
+                f"[blue]Partial trajectory saved to: {trajectory_path}[/blue]")
         sys.exit(1)
     except Exception as e:
         console.print(f"\n[red]Unexpected error: {e}[/red]")
         console.print(traceback.format_exc())
         if trajectory_path:
-            console.print(f"[blue]Trajectory saved to: {trajectory_path}[/blue]")
+            console.print(
+                f"[blue]Trajectory saved to: {trajectory_path}[/blue]")
         sys.exit(1)
 
 
+# uv run trae-cli interactive
 @cli.command()
 @click.option("--provider", "-p", help="LLM provider to use")
 @click.option("--model", "-m", help="Specific model to use")
@@ -199,7 +206,12 @@ def interactive(
     Args:
         tasks: the task that you want your agent to solve. This is required to be in the input
     """
-    config = load_config(config_file, provider, model, model_base_url, api_key, max_steps=max_steps)
+    config = load_config(config_file,
+                         provider,
+                         model,
+                         model_base_url,
+                         api_key,
+                         max_steps=max_steps)
 
     console.print(
         Panel(
@@ -210,22 +222,22 @@ def interactive(
     [bold]Config File:[/bold] {config_file}""",
             title="Interactive Mode",
             border_style="green",
-        )
-    )
+        ))
 
     # Create agent
     agent = create_agent(config)
 
     while True:
         try:
-            console.print("\n[bold blue]Task:[/bold blue] ", end="")
+            console.print("\n[bold blue]Task:[/bold blue] ",
+                          end="")  # 用户交互输入task
             task = input()
 
-            if task.lower() in ["exit", "quit"]:
+            if task.lower() in ["exit", "quit"]:  # 退出命令
                 console.print("[green]Goodbye![/green]")
                 break
 
-            if task.lower() == "help":
+            if task.lower() == "help":  # 查看帮助
                 console.print(
                     Panel(
                         """[bold]Available Commands:[/bold]
@@ -236,12 +248,17 @@ def interactive(
 • 'exit' or 'quit' - End the session""",
                         title="Help",
                         border_style="yellow",
-                    )
-                )
+                    ))
                 continue
 
-            console.print("\n[bold blue]Working Directory:[/bold blue] ", end="")
+            console.print("\n[bold blue]Working Directory:[/bold blue] ",
+                          end="")
+
+            # 用户输入获取工作目录，进行修改；如果输入为空，则继续使用当前目录
+            # 后面user_prompt的信息中会传入working_dir
             working_dir = input()
+            # 避免后续模型还需要调用工具bash运行pwd寻找目录，在这里直接将当前工作目录设置好
+            working_dir = working_dir.strip() or os.getcwd()
 
             if task.lower() == "status":
                 console.print(
@@ -253,8 +270,7 @@ def interactive(
     [bold]Working Directory:[/bold] {os.getcwd()}""",
                         title="Agent Status",
                         border_style="blue",
-                    )
-                )
+                    ))
                 continue
 
             if task.lower() == "clear":
@@ -264,11 +280,12 @@ def interactive(
             # Set up trajectory recording for this task
             trajectory_path = agent.setup_trajectory_recording(trajectory_file)
 
-            console.print(f"[blue]Trajectory will be saved to: {trajectory_path}[/blue]")
+            console.print(
+                f"[blue]Trajectory will be saved to: {trajectory_path}[/blue]")
 
             task_args = {
                 "project_path": working_dir,
-                "issue": task,
+                "issue": task,  # 任务名 用户输入
                 "must_patch": "false",
             }
 
@@ -279,10 +296,12 @@ def interactive(
             # Configure agent for progress display
             _ = asyncio.run(agent.execute_task())
 
-            console.print(f"\n[green]Trajectory saved to: {trajectory_path}[/green]")
+            console.print(
+                f"\n[green]Trajectory saved to: {trajectory_path}[/green]")
 
-        except KeyboardInterrupt:
-            console.print("\n[yellow]Use 'exit' or 'quit' to end the session[/yellow]")
+        except KeyboardInterrupt:  # 手动退出
+            console.print(
+                "\n[yellow]Use 'exit' or 'quit' to end the session[/yellow]")
         except EOFError:
             console.print("\n[green]Goodbye![/green]")
             break
@@ -290,6 +309,7 @@ def interactive(
             console.print(f"[red]Error: {e}[/red]")
 
 
+# uv run trae-cli show-config
 @cli.command()
 @click.option("--config-file", help="Path to configuration file", default="trae_config.json")
 @click.option("--provider", "-p", help="LLM provider to use")

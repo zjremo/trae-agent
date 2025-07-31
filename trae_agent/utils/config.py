@@ -59,7 +59,7 @@ class Config:
         else:
             config_path = Path(config_or_config_file)
             if config_path.exists():
-                try:
+                try:    # 读取文件，利用json来导入为python对象
                     with open(config_path, "r") as f:
                         self._config = json.load(f)
                 except Exception as e:
@@ -160,7 +160,7 @@ def load_config(
     Return:
         Config Object
     """
-
+    # 从文件中拉取配置
     config: Config = Config(config_file)
 
     resolved_provider = resolve_config_value(provider, config.default_provider) or "openai"

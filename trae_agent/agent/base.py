@@ -18,7 +18,9 @@ from .agent_basics import AgentExecution, AgentState, AgentStep
 class Agent(ABC):
     """Base class for LLM-based agents."""
 
-    def __init__(self, config: Config | None = None, llm_client: LLMClient | None = None):
+    def __init__(self,
+                 config: Config | None = None,
+                 llm_client: LLMClient | None = None):
         """Initialize the agent.
 
         Args:
@@ -29,13 +31,15 @@ class Agent(ABC):
         """
         if llm_client is None:
             if config is None:
-                raise ValueError("Either config or llm_client must be provided")
+                raise ValueError(
+                    "Either config or llm_client must be provided")
             self._llm_client = LLMClient(
                 config.default_provider,
                 config.model_providers[config.default_provider],
                 config.max_steps,
             )
-            self._model_parameters = config.model_providers[config.default_provider]
+            self._model_parameters = config.model_providers[
+                config.default_provider]
             self._max_steps = config.max_steps
         else:
             self._llm_client = llm_client
@@ -78,7 +82,8 @@ class Agent(ABC):
         """Get the trajectory recorder for this agent."""
         return self._trajectory_recorder
 
-    def _set_trajectory_recorder(self, recorder: TrajectoryRecorder | None) -> None:
+    def _set_trajectory_recorder(self,
+                                 recorder: TrajectoryRecorder | None) -> None:
         """Set the trajectory recorder for this agent."""
         self._trajectory_recorder = recorder
         # Also set it on the LLM client
@@ -142,13 +147,14 @@ class Agent(ABC):
         step: AgentStep | None = None
 
         try:
-            messages = self._initial_messages
+            messages = self._initial_messages # 传递初始化提示词(system prompt + user prompt)
             step_number = 1
 
-            while step_number <= self._max_steps:
+            while step_number <= self._max_steps:  # 按步数执行任务
                 step = self._create_new_step(step_number)
                 try:
-                    messages = await self._run_llm_step(step, messages, execution)
+                    messages = await self._run_llm_step(
+                        step, messages, execution)
                     self._finalize_step(step, messages, execution)
                     if step.state == AgentState.COMPLETED:
                         break
@@ -171,30 +177,35 @@ class Agent(ABC):
     def _create_new_step(self, step_number: int) -> AgentStep:
         return AgentStep(step_number=step_number, state=AgentState.THINKING)
 
-    async def _run_llm_step(
-        self, step: "AgentStep", messages: list["LLMMessage"], execution: "AgentExecution"
-    ) -> list["LLMMessage"]:
+    # 执行大模型操作一步
+    async def _run_llm_step(self, step: "AgentStep",
+                            messages: list["LLMMessage"],
+                            execution: "AgentExecution") -> list["LLMMessage"]:
         step.state = AgentState.THINKING
-        self._update_cli_console(step)
-        llm_response = self._llm_client.chat(messages, self._model_parameters, self._tools)
+        self._update_cli_console(step) # run模式下调用这个才会执行, interactive模式并不会打印进度
+        llm_response = self._llm_client.chat(messages, self._model_parameters,
+                                             self._tools)
         step.llm_response = llm_response
         self._update_cli_console(step)
-        self._update_llm_usage(llm_response, execution)
+        self._update_llm_usage(llm_response, execution) # 更新用量
 
         if self.llm_indicates_task_completed(llm_response):
             if self._is_task_completed(llm_response):
-                self._llm_complete_response_task_handler(llm_response, step, execution, messages)
+                self._llm_complete_response_task_handler(
+                    llm_response, step, execution, messages)
                 return messages
             else:
                 step.state = AgentState.THINKING
-                return [LLMMessage(role="user", content=self.task_incomplete_message())]
+                return [
+                    LLMMessage(role="user",
+                               content=self.task_incomplete_message())
+                ]
         else:
             tool_calls = llm_response.tool_calls
             return await self._tool_call_handler(tool_calls, step)
 
-    def _finalize_step(
-        self, step: "AgentStep", messages: list["LLMMessage"], execution: "AgentExecution"
-    ) -> None:
+    def _finalize_step(self, step: "AgentStep", messages: list["LLMMessage"],
+                       execution: "AgentExecution") -> None:
         self._record_handler(step, messages)
         self._update_cli_console(step)
         execution.steps.append(step)
@@ -220,9 +231,7 @@ class Agent(ABC):
 
         reflection = "\n".join(
             f"The tool execution failed with error: {tool_result.error}. Consider trying a different approach or fixing the parameters."
-            for tool_result in tool_results
-            if not tool_result.success
-        )
+            for tool_result in tool_results if not tool_result.success)
 
         return reflection
 
@@ -237,9 +246,12 @@ class Agent(ABC):
         ]
 
         response_lower = llm_response.content.lower()
-        return any(indicator in response_lower for indicator in completion_indicators)
+        return any(indicator in response_lower
+                   for indicator in completion_indicators) # 大模型回复内容里面有这些提示词标志完成
 
-    def _is_task_completed(self, llm_response: LLMResponse) -> bool:  # pyright: ignore[reportUnusedParameter]
+    def _is_task_completed(
+        self, llm_response: LLMResponse
+    ) -> bool:  # pyright: ignore[reportUnusedParameter]
         """Check if the task is completed based on the response. Override for custom logic."""
         return True
 
@@ -251,7 +263,8 @@ class Agent(ABC):
         if self.cli_console:
             self.cli_console.update_status(step)
 
-    def _update_llm_usage(self, llm_response: LLMResponse, execution: AgentExecution) -> None:
+    def _update_llm_usage(self, llm_response: LLMResponse,
+                          execution: AgentExecution) -> None:
         if not llm_response.usage:
             return None
         # if execution.total_tokens is None then set it to be llm_response.usage else sum it up
@@ -280,7 +293,8 @@ class Agent(ABC):
         self._update_cli_console(step)
         execution.steps.append(step)
 
-    def _record_handler(self, step: AgentStep, messages: list[LLMMessage]) -> None:
+    def _record_handler(self, step: AgentStep,
+                        messages: list[LLMMessage]) -> None:
         if self.trajectory_recorder:
             self.trajectory_recorder.record_agent_step(
                 step_number=step.step_number,
@@ -293,9 +307,8 @@ class Agent(ABC):
                 error=step.error,
             )
 
-    async def _tool_call_handler(
-        self, tool_calls: list[ToolCall] | None, step: AgentStep
-    ) -> list[LLMMessage]:
+    async def _tool_call_handler(self, tool_calls: list[ToolCall] | None,
+                                 step: AgentStep) -> list[LLMMessage]:
         messages: list[LLMMessage] = []
         if not tool_calls or len(tool_calls) <= 0:
             messages = [
@@ -311,9 +324,11 @@ class Agent(ABC):
         self._update_cli_console(step)
 
         if self.model_parameters.parallel_tool_calls:
-            tool_results = await self._tool_caller.parallel_tool_call(tool_calls)
+            tool_results = await self._tool_caller.parallel_tool_call(
+                tool_calls)
         else:
-            tool_results = await self._tool_caller.sequential_tool_call(tool_calls)
+            tool_results = await self._tool_caller.sequential_tool_call(
+                tool_calls)
         step.tool_results = tool_results
         self._update_cli_console(step)
         for tool_result in tool_results:
