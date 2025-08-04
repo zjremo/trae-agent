@@ -231,4 +231,4 @@ class ToolExecutor:
 
     async def sequential_tool_call(self, tool_calls: list[ToolCall]) -> list[ToolResult]:
         """Execute tool calls in sequential"""
-        return [await self.execute_tool_call(call) for call in tool_calls]
+        return [await self.execute_tool_call(call) for call in tool_calls] # 依次调用所有工具

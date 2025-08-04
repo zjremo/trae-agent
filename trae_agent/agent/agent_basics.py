@@ -18,11 +18,11 @@ __all__ = [
 class AgentState(Enum):
     """Defines possible states during an agent's execution lifecycle."""
 
-    IDLE = "idle"
-    THINKING = "thinking"
-    CALLING_TOOL = "calling_tool"
-    REFLECTING = "reflecting"
-    COMPLETED = "completed"
+    IDLE = "idle" # 空闲 初始状态
+    THINKING = "thinking" # 思考中
+    CALLING_TOOL = "calling_tool" # 调用工具中
+    REFLECTING = "reflecting" # 反思优化
+    COMPLETED = "completed" # 已完成
     ERROR = "error"
 
 

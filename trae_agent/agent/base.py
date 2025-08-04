@@ -150,6 +150,7 @@ class Agent(ABC):
             messages = self._initial_messages # 传递初始化提示词(system prompt + user prompt)
             step_number = 1
 
+            # 循环按步数执行任务
             while step_number <= self._max_steps:  # 按步数执行任务
                 step = self._create_new_step(step_number)
                 try:
@@ -310,16 +311,17 @@ class Agent(ABC):
     async def _tool_call_handler(self, tool_calls: list[ToolCall] | None,
                                  step: AgentStep) -> list[LLMMessage]:
         messages: list[LLMMessage] = []
-        if not tool_calls or len(tool_calls) <= 0:
+        # 解释性问题最后用户会发送这个提示词给llm
+        if not tool_calls or len(tool_calls) <= 0: 
             messages = [
                 LLMMessage(
                     role="user",
                     content="It seems that you have not completed the task.",
                 )
             ]
-            return messages
+            return messages 
 
-        step.state = AgentState.CALLING_TOOL
+        step.state = AgentState.CALLING_TOOL # 调用工具
         step.tool_calls = tool_calls
         self._update_cli_console(step)
 

@@ -29,6 +29,7 @@ from ..base_client import BaseLLMClient
 from ..config import ModelParameters
 from ..llm_basics import LLMMessage, LLMResponse, LLMUsage
 from ..retry_utils import retry_with
+from trae_agent.cli import console
 
 
 class ProviderConfig(ABC):
@@ -111,6 +112,7 @@ class OpenAICompatibleClient(BaseLLMClient):  # OpenAI适配模型商使用
             self.message_history = self.message_history + parsed_messages  # list加法
         else:
             self.message_history = parsed_messages
+        # console.print(f"\n[green]message_history is {self.message_history}[/green]")
 
         tool_schemas = None
         if tools:
@@ -162,6 +164,9 @@ class OpenAICompatibleClient(BaseLLMClient):  # OpenAI适配模型商使用
             ) if response.usage else None), # usage用量
         )
 
+        # print the model response
+        console.print(f"\n[yellow]llm_response is {llm_response}[/yellow]")
+
         # Update message history
         if llm_response.tool_calls:
             self.message_history.append(
@@ -182,7 +187,7 @@ class OpenAICompatibleClient(BaseLLMClient):  # OpenAI适配模型商使用
         elif llm_response.content:
             self.message_history.append(
                 ChatCompletionAssistantMessageParam(
-                    content=llm_response.content, role="assistant"))
+                    content=llm_response.content, role="assistant")) # 添加上下文 模型输出
 
         if self.trajectory_recorder:
             self.trajectory_recorder.record_llm_interaction( # 记录一次模型交互

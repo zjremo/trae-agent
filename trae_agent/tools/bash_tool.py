@@ -212,6 +212,7 @@ class BashTool(Tool):
             except Exception as e:
                 return ToolExecResult(error=f"Error starting bash session: {e}", error_code=-1)
 
+        # 直接bash执行终端命令
         command = str(arguments["command"]) if "command" in arguments else None
         if command is None:
             return ToolExecResult(

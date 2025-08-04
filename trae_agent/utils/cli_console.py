@@ -49,7 +49,7 @@ class CLIConsole:
         self.agent_step_history: list[AgentStep] = []
         self.agent_execution: AgentExecution | None = None
 
-    def update_status(
+    def update_status( # 记录agent_steps信息
         self,
         agent_step: AgentStep | None = None,
         agent_execution: AgentExecution | None = None,

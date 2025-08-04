@@ -98,7 +98,7 @@ You should:
 11. Only set next_thought_needed to false when truly done and a satisfactory answer is reached"""
 
     @override
-    def get_parameters(self) -> list[ToolParameter]:
+    def get_parameters(self) -> list[ToolParameter]: # 定义工具参数，传递给大模型之后返回相应的参数结果
         return [
             ToolParameter(
                 name="thought",
@@ -274,6 +274,7 @@ You should:
 │ {thought_data.thought.ljust(border_length - 2)} │
 └{border}┘"""
 
+    # 执行工具调用，返回调用结果会作为上下文提供给llm
     @override
     async def execute(self, arguments: ToolCallArguments) -> ToolExecResult:
         """Execute the sequential thinking tool."""
@@ -309,7 +310,7 @@ You should:
 
             return ToolExecResult(
                 output=f"Sequential thinking step completed.\n\nStatus:\n{json.dumps(response_data, indent=2)}"
-            )
+            ) # 封装消息传递给大模型作为回复大模型想调用工具的结果
 
         except Exception as e:
             error_data = {"error": str(e), "status": "failed"}
